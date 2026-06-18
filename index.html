@@ -416,6 +416,27 @@
   [data-theme="dark"] .theme-toggle .i-sun{display:block}
   [data-theme="dark"] .theme-toggle .i-moon{display:none}
 
+  /* ---------- micro-interactions ---------- */
+  .btn .ico{width:17px;height:17px;flex:none}
+  .socials a:active{transform:translateY(-1px) scale(.93)}
+  .crow{position:relative}
+  .crow:active{transform:scale(.994)}
+  .stat:hover{background:var(--raised-hover)}
+  .stat b{transition:color .35s ease}
+  .stat:hover b{color:var(--cobalt-ink)}
+  .crow__copied{position:absolute;right:8px;top:50%;transform:translateY(-50%) translateX(8px);
+    font-family:"JetBrains Mono",monospace;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--cobalt-ink);opacity:0;pointer-events:none;
+    transition:opacity .35s ease,transform .35s cubic-bezier(.2,.7,.2,1)}
+  .crow.copied .crow__copied{opacity:1;transform:translateY(-50%) translateX(0)}
+  .crow.copied .arw{opacity:0;transform:translateX(10px)}
+  .proj{--mx:50%;--my:50%}
+  .proj::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:0;
+    background:radial-gradient(380px circle at var(--mx) var(--my),rgba(90,114,255,.13),transparent 62%);
+    opacity:0;transition:opacity .45s ease}
+  .proj:hover::after{opacity:1}
+  .proj>*{position:relative;z-index:1}
+
   /* ---------- responsive ---------- */
   @media (max-width:820px){
     .about__grid{grid-template-columns:1fr}
@@ -461,6 +482,7 @@
       <a href="#work">Work</a>
       <a href="#path">Path</a>
       <a href="#contact">Contact</a>
+      <a href="./resume.html" target="_blank" rel="noopener">Résumé</a>
     </div>
     <a class="btn btn-primary" href="#contact" style="padding:9px 18px;font-size:.88rem;border-radius:11px">
       Get in touch <span class="arw">→</span>
@@ -479,8 +501,11 @@
       <p class="hero__role li li-2">I build AI agents that reason over enterprise data — <span class="hl">and act on it.</span></p>
       <p class="hero__bio li li-3">Agentic AI, RAG systems, and the production pipelines beneath them — from multi-step agent platforms to ERP-connected assistants and conversational analytics.</p>
       <div class="hero__cta li li-4">
-        <a class="btn btn-primary" href="#work">See the work <span class="arw">→</span></a>
-        <a class="btn btn-ghost" href="#contact">Get in touch <span class="arw">→</span></a>
+        <a class="btn btn-primary" data-magnetic="0.3" href="./resume.html" target="_blank" rel="noopener">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h5"/></svg>
+          Résumé
+        </a>
+        <a class="btn btn-ghost" data-magnetic="0.2" href="#work">See the work <span class="arw">→</span></a>
       </div>
       <div class="socials li li-5">
         <a href="https://www.linkedin.com/in/hamzasalman727" target="_blank" rel="noopener" aria-label="LinkedIn">
@@ -658,8 +683,13 @@
       <h2 class="contact__head reveal" id="contact-h">Let's build AI<br>that <span class="hl">acts.</span></h2>
       <p class="contact__sub reveal">Open to AI and agentic-engineering roles. Email is the fastest way to reach me.</p>
       <div class="crows reveal">
-        <a class="crow" href="mailto:dev.hamzakhaled@gmail.com">
+        <a class="crow" href="./resume.html" target="_blank" rel="noopener">
+          <span class="crow__l"><span class="crow__lab">Résumé</span><span class="crow__v">View &amp; save as PDF</span></span>
+          <span class="arw" aria-hidden="true">→</span>
+        </a>
+        <a class="crow" href="mailto:dev.hamzakhaled@gmail.com" data-copy="dev.hamzakhaled@gmail.com">
           <span class="crow__l"><span class="crow__lab">Email</span><span class="crow__v">dev.hamzakhaled@gmail.com</span></span>
+          <span class="crow__copied" aria-hidden="true">Copied</span>
           <span class="arw" aria-hidden="true">→</span>
         </a>
         <a class="crow" href="https://www.linkedin.com/in/hamzasalman727" target="_blank" rel="noopener">
@@ -1038,6 +1068,47 @@
     update();
   }
 
+  /* ---- magnetic pull on the hero buttons (pointer + motion only) ---- */
+  function magnetic(){
+    if(RM || !(window.matchMedia && window.matchMedia("(hover:hover) and (pointer:fine)").matches)) return;
+    Array.prototype.slice.call(document.querySelectorAll("[data-magnetic]")).forEach(function(el){
+      var s = parseFloat(el.getAttribute("data-magnetic")) || 0.25;
+      el.addEventListener("pointermove", function(e){
+        var r = el.getBoundingClientRect();
+        el.style.transform = "translate(" + ((e.clientX - (r.left + r.width/2)) * s).toFixed(1) + "px," +
+                                             ((e.clientY - (r.top + r.height/2)) * s).toFixed(1) + "px)";
+      });
+      el.addEventListener("pointerleave", function(){ el.style.transform = ""; });
+    });
+  }
+
+  /* ---- click-to-copy email with feedback ---- */
+  function copyEmail(){
+    Array.prototype.slice.call(document.querySelectorAll("[data-copy]")).forEach(function(el){
+      el.addEventListener("click", function(e){
+        if(!navigator.clipboard) return;            // no clipboard API -> let mailto open
+        e.preventDefault();
+        navigator.clipboard.writeText(el.getAttribute("data-copy")).then(function(){
+          el.classList.add("copied");
+          clearTimeout(el._ct);
+          el._ct = setTimeout(function(){ el.classList.remove("copied"); }, 1700);
+        }).catch(function(){ window.location.href = el.getAttribute("href"); });
+      });
+    });
+  }
+
+  /* ---- cursor spotlight on project cards ---- */
+  function spotlight(){
+    if(RM || !(window.matchMedia && window.matchMedia("(hover:hover) and (pointer:fine)").matches)) return;
+    Array.prototype.slice.call(document.querySelectorAll(".proj")).forEach(function(card){
+      card.addEventListener("pointermove", function(e){
+        var r = card.getBoundingClientRect();
+        card.style.setProperty("--mx", (e.clientX - r.left) + "px");
+        card.style.setProperty("--my", (e.clientY - r.top) + "px");
+      });
+    });
+  }
+
   document.getElementById("yr").textContent = new Date().getFullYear();
   theme();
   buildBackground();
@@ -1046,6 +1117,9 @@
   counters();
   navSpy();
   scrollFx();
+  magnetic();
+  copyEmail();
+  spotlight();
 })();
 </script>
 </body>

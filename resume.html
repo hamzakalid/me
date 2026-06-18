@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hamza Salman — Résumé · AI Engineer</title>
+<meta name="description" content="Résumé of Hamza Salman, AI Engineer — agentic AI, RAG systems, and enterprise AI platforms." />
+<meta name="robots" content="index, follow" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='8'%20fill='%230B1220'/%3E%3Ctext%20x='16'%20y='21'%20font-family='monospace'%20font-size='13'%20font-weight='700'%20fill='%23fff'%20text-anchor='middle'%3EHS%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#0B1220; --slate:#44506b; --slate-2:#697389;
+    --cobalt:#2740E6; --cobalt-ink:#1c30b8;
+    --line:rgba(11,18,32,.12); --paper:#ffffff; --bg:#eef1f6;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --ink:#EAF0FA; --slate:#aeb8cd; --slate-2:#8b96ad; --cobalt:#5A72FF; --cobalt-ink:#9DACFF;
+      --line:rgba(255,255,255,.14); --paper:#0e1422; --bg:#080b14; }
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:"Inter",system-ui,sans-serif;color:var(--ink);background:var(--bg);
+    line-height:1.6;-webkit-font-smoothing:antialiased;padding:clamp(20px,4vw,56px) 16px 80px}
+  a{color:inherit;text-decoration:none}
+
+  .sheet{max-width:820px;margin-inline:auto;background:var(--paper);border:1px solid var(--line);
+    border-radius:16px;padding:clamp(26px,4.5vw,54px);
+    box-shadow:0 30px 80px -50px rgba(11,18,32,.5)}
+
+  /* header */
+  .top{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:flex-end;
+    padding-bottom:20px;border-bottom:1px solid var(--line)}
+  .name{font-family:"Space Grotesk",sans-serif;font-weight:700;letter-spacing:-.03em;
+    font-size:clamp(2rem,5vw,2.9rem);line-height:1}
+  .role{font-family:"Space Grotesk",sans-serif;font-weight:500;color:var(--cobalt-ink);
+    font-size:clamp(1rem,2vw,1.2rem);margin-top:8px;letter-spacing:-.01em}
+  .contact{font-family:"JetBrains Mono",monospace;font-size:.74rem;line-height:1.9;
+    color:var(--slate);text-align:right}
+  .contact a:hover{color:var(--cobalt-ink)}
+  .contact b{display:block;color:var(--slate-2);font-weight:500}
+
+  .grid{display:grid;grid-template-columns:1fr;gap:clamp(18px,2.6vw,26px);margin-top:24px}
+
+  .sec h2{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:.72rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--cobalt-ink);margin-bottom:12px;
+    display:flex;align-items:center;gap:12px}
+  .sec h2::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  .summary{color:var(--slate);font-size:.96rem;max-width:70ch}
+
+  .job{margin-bottom:16px}
+  .job:last-child{margin-bottom:0}
+  .job__h{display:flex;flex-wrap:wrap;gap:4px 14px;justify-content:space-between;align-items:baseline}
+  .job__r{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:1.06rem;letter-spacing:-.01em}
+  .job__w{font-family:"JetBrains Mono",monospace;font-size:.72rem;color:var(--slate-2);white-space:nowrap}
+  .job__o{color:var(--cobalt-ink);font-size:.9rem;font-weight:500;margin-top:2px}
+  .job ul{list-style:none;margin-top:9px;display:flex;flex-direction:column;gap:6px}
+  .job li{position:relative;padding-left:18px;color:var(--slate);font-size:.92rem;line-height:1.55}
+  .job li::before{content:"";position:absolute;left:2px;top:.6em;width:5px;height:5px;border-radius:50%;
+    background:var(--cobalt);opacity:.7}
+
+  .skills{display:grid;gap:10px}
+  .skillrow{display:grid;grid-template-columns:140px 1fr;gap:12px;align-items:baseline}
+  .skillrow b{font-family:"JetBrains Mono",monospace;font-size:.68rem;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--slate-2);font-weight:500;padding-top:3px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-family:"JetBrains Mono",monospace;font-size:.7rem;border:1px solid var(--line);
+    border-radius:999px;padding:4px 9px;color:var(--slate)}
+
+  .edu__h{display:flex;flex-wrap:wrap;gap:4px 14px;justify-content:space-between;align-items:baseline}
+  .edu__d{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:1.02rem}
+  .edu__w{font-family:"JetBrains Mono",monospace;font-size:.72rem;color:var(--slate-2)}
+  .edu__o{color:var(--slate);font-size:.9rem;margin-top:2px}
+
+  /* floating actions (screen only) */
+  .actions{position:fixed;right:clamp(16px,3vw,28px);bottom:clamp(16px,3vw,28px);z-index:10;
+    display:flex;gap:10px}
+  .act{display:inline-flex;align-items:center;gap:9px;font-family:"Inter",sans-serif;font-weight:600;
+    font-size:.92rem;padding:12px 18px;border-radius:13px;cursor:pointer;border:1px solid transparent;
+    transition:transform .3s cubic-bezier(.2,.7,.2,1),box-shadow .3s,border-color .3s,background .3s,color .3s}
+  .act:active{transform:scale(.96)}
+  .act-print{background:linear-gradient(180deg,#1f283f,#0B1220);color:#fff;
+    box-shadow:0 14px 30px -16px rgba(11,18,32,.7)}
+  .act-print:hover{transform:translateY(-2px);box-shadow:0 20px 40px -18px rgba(11,18,32,.7)}
+  .act-back{background:var(--paper);border-color:var(--line);color:var(--ink)}
+  .act-back:hover{transform:translateY(-2px);border-color:var(--cobalt);color:var(--cobalt-ink)}
+
+  /* on-screen entrance */
+  @media (prefers-reduced-motion: no-preference){
+    .reveal{opacity:0;transform:translateY(16px);animation:rise .7s cubic-bezier(.16,1,.3,1) forwards}
+    .sec:nth-child(1){animation-delay:.05s}
+    .sec:nth-child(2){animation-delay:.13s}
+    .sec:nth-child(3){animation-delay:.21s}
+    .sec:nth-child(4){animation-delay:.29s}
+    .top.reveal{animation-delay:0s}
+    @keyframes rise{to{opacity:1;transform:none}}
+  }
+
+  /* print: clean one-pager */
+  @media print{
+    @page{margin:14mm}
+    body{background:#fff;color:#000;padding:0}
+    .sheet{border:0;box-shadow:none;border-radius:0;padding:0;max-width:none}
+    .actions{display:none !important}
+    .reveal{opacity:1 !important;transform:none !important;animation:none !important}
+    a{color:#000}
+    .role,.job__o,.sec h2,.edu__d,.job li::before{color:#000 !important}
+    .sec h2{color:#000 !important}
+    .job,.edu,.sec{page-break-inside:avoid}
+    .chip{border-color:#bbb}
+  }
+</style>
+</head>
+<body>
+
+<main class="sheet">
+  <header class="top reveal">
+    <div>
+      <h1 class="name">Hamza Salman</h1>
+      <div class="role">AI Engineer · Agentic AI &amp; Enterprise AI Platforms</div>
+    </div>
+    <div class="contact">
+      <b>Riyadh, Saudi Arabia</b>
+      <a href="mailto:dev.hamzakhaled@gmail.com">dev.hamzakhaled@gmail.com</a><br />
+      <a href="tel:+966561912377">+966 56 191 2377</a><br />
+      <a href="https://www.linkedin.com/in/hamzasalman727" target="_blank" rel="noopener">linkedin.com/in/hamzasalman727</a>
+    </div>
+  </header>
+
+  <div class="grid">
+    <section class="sec reveal">
+      <h2>Summary</h2>
+      <p class="summary">AI engineer with 4+ years in software engineering and 3+ years building production AI systems. Focused on agentic AI: systems that plan, decide, and execute against real enterprise data. I deliver enterprise AI platforms end to end, from agent architectures and orchestration loops to RAG, knowledge graphs, guardrails, evaluation, and the data pipelines underneath. The bar is reliable, secure, and actually in production.</p>
+    </section>
+
+    <section class="sec reveal">
+      <h2>Experience</h2>
+
+      <div class="job">
+        <div class="job__h">
+          <div>
+            <div class="job__r">AI Developer &amp; Automation Engineer</div>
+            <div class="job__o">Al-Obeikan Digital Solutions · AI &amp; Invention Dept, Riyadh</div>
+          </div>
+          <div class="job__w">Jan 2023 - Present</div>
+        </div>
+        <ul>
+          <li>Built the company's AI engine as a modular microservices system: data pipelines, distributed training, evaluation, and an API gateway with RabbitMQ and gRPC.</li>
+          <li>Designed and shipped three platforms: the Nawras AI Platform (low-code agentic-workflow builder with multi-provider LLM routing, RAG and Graph RAG, guardrails, evaluation, memory, MCP, and tracing), X10 (ERP-connected agent on ontology and semantic layers with agent and tool loops, a skills system, and a Python sandbox), and the BI Agent (natural-language to T-SQL analytics with a semantic layer, knowledge graph, and dashboard builder).</li>
+          <li>Delivered business ML: RFM segmentation, clustering, and forecasting for budgeting, inventory, and liquidity planning.</li>
+        </ul>
+      </div>
+
+      <div class="job">
+        <div class="job__h">
+          <div>
+            <div class="job__r">Full-Stack Developer</div>
+            <div class="job__o">Smartmainds · Dubai, UAE</div>
+          </div>
+          <div class="job__w">Feb 2022 - Dec 2022</div>
+        </div>
+        <ul>
+          <li>Built front-end UI in Angular 11 and Angular Material with Firebase for real-time data and authentication.</li>
+          <li>Developed back-end REST APIs, a relational database schema, and OAuth 2.0 authentication.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="sec reveal">
+      <h2>Skills</h2>
+      <div class="skills">
+        <div class="skillrow"><b>AI &amp; LLMs</b><div class="chips">
+          <span class="chip">Agentic AI</span><span class="chip">RAG</span><span class="chip">Graph RAG</span>
+          <span class="chip">Knowledge graphs</span><span class="chip">Semantic &amp; ontology layers</span>
+          <span class="chip">Embeddings</span><span class="chip">Vector search</span><span class="chip">Multi-provider LLMs</span>
+          <span class="chip">Guardrails</span><span class="chip">Evaluation</span><span class="chip">Memory</span><span class="chip">MCP</span>
+        </div></div>
+        <div class="skillrow"><b>Machine Learning</b><div class="chips">
+          <span class="chip">Python</span><span class="chip">TensorFlow</span><span class="chip">PyTorch</span>
+          <span class="chip">Scikit-learn</span><span class="chip">Pandas</span><span class="chip">NumPy</span><span class="chip">Dask</span>
+          <span class="chip">ARIMA</span><span class="chip">Prophet</span><span class="chip">LSTM / GRU</span><span class="chip">Clustering</span><span class="chip">RFM</span>
+        </div></div>
+        <div class="skillrow"><b>Backend &amp; Data</b><div class="chips">
+          <span class="chip">FastAPI</span><span class="chip">Node.js</span><span class="chip">SQL / T-SQL</span>
+          <span class="chip">REST APIs</span><span class="chip">OAuth 2.0</span><span class="chip">API gateways</span><span class="chip">ERP integration</span>
+        </div></div>
+        <div class="skillrow"><b>Platform &amp; Infra</b><div class="chips">
+          <span class="chip">Docker</span><span class="chip">Microsoft Azure</span><span class="chip">RabbitMQ</span>
+          <span class="chip">gRPC</span><span class="chip">Microservices</span>
+        </div></div>
+      </div>
+    </section>
+
+    <section class="sec reveal">
+      <h2>Education</h2>
+      <div class="edu">
+        <div class="edu__h">
+          <div class="edu__d">B.Sc. Computer Programming</div>
+          <div class="edu__w">2017 - 2021</div>
+        </div>
+        <div class="edu__o">University of Aden, Faculty of Computer &amp; Information Technology. Graduated 3rd in class, GPA 4.69.</div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div class="actions">
+  <a class="act act-back" href="./index.html">Back to site</a>
+  <button class="act act-print" type="button" id="printBtn">Save as PDF</button>
+</div>
+
+<script>
+  document.getElementById("printBtn").addEventListener("click", function(){ window.print(); });
+</script>
+</body>
+</html>
