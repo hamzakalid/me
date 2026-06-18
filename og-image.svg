@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Hamza Salman — AI Engineer">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B1220"/>
+      <stop offset="1" stop-color="#141d36"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.78" cy="0.18" r="0.9">
+      <stop offset="0" stop-color="#2740E6" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#2740E6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="name" x1="0" y1="0" x2="1" y2="0.4">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#b9c3dd"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- flowing-paths motif -->
+  <g fill="none" stroke="#5a72ff" stroke-linecap="round">
+    <path d="M-40 470 C 240 360, 520 540, 800 380 S 1180 300, 1320 360" stroke-opacity="0.30" stroke-width="2"/>
+    <path d="M-40 520 C 260 410, 540 590, 820 430 S 1200 350, 1340 410" stroke-opacity="0.22" stroke-width="2"/>
+    <path d="M-40 420 C 220 320, 500 500, 780 340 S 1160 260, 1300 320" stroke-opacity="0.16" stroke-width="1.5"/>
+  </g>
+
+  <!-- monogram -->
+  <rect x="80" y="78" width="64" height="64" rx="16" fill="#EAF0FA"/>
+  <text x="112" y="121" font-family="'JetBrains Mono','Courier New',monospace" font-size="28" font-weight="700" fill="#0B1220" text-anchor="middle">HS</text>
+
+  <!-- availability pill -->
+  <g transform="translate(80,470)">
+    <rect x="0" y="0" width="338" height="44" rx="22" fill="#ffffff" fill-opacity="0.06" stroke="#ffffff" stroke-opacity="0.16"/>
+    <circle cx="26" cy="22" r="6" fill="#34d27f"/>
+    <text x="44" y="28" font-family="'JetBrains Mono','Courier New',monospace" font-size="15" letter-spacing="1.2" fill="#9BA8C2">AVAILABLE FOR AI ROLES</text>
+  </g>
+
+  <!-- eyebrow -->
+  <text x="80" y="232" font-family="'JetBrains Mono','Courier New',monospace" font-size="22" letter-spacing="5" fill="#9DACFF">AI ENGINEER — RIYADH, SA</text>
+
+  <!-- name -->
+  <text x="76" y="350" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="118" font-weight="700" letter-spacing="-3" fill="url(#name)">Hamza Salman</text>
+
+  <!-- role -->
+  <text x="80" y="418" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="34" font-weight="500" fill="#cdd6e8">Agentic AI · RAG systems · enterprise AI platforms that act.</text>
+
+  <!-- right contact -->
+  <text x="1120" y="560" font-family="'JetBrains Mono','Courier New',monospace" font-size="18" letter-spacing="1" fill="#7a87a3" text-anchor="end">dev.hamzakhaled@gmail.com</text>
+</svg>

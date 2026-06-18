@@ -3,27 +3,141 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- prevent flash of wrong theme: set before stylesheet -->
+<script>
+(function(){try{
+  var t = localStorage.getItem("theme");
+  if(t!=="light" && t!=="dark"){
+    t = (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+  }
+  document.documentElement.setAttribute("data-theme", t);
+}catch(e){}})();
+</script>
+
 <title>Hamza Salman — AI Engineer</title>
 <meta name="description" content="Hamza Salman — AI Engineer building agentic AI systems, RAG pipelines, and enterprise AI platforms." />
+<meta name="author" content="Hamza Salman" />
+<meta name="robots" content="index, follow" />
+<meta name="color-scheme" content="light dark" />
+<meta name="theme-color" id="metaTheme" content="#EEF1F6" />
+<link rel="canonical" href="https://hamzakalid.github.io/me/" />
+
+<!-- favicon (inline monogram) -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='8'%20fill='%230B1220'/%3E%3Ctext%20x='16'%20y='21'%20font-family='monospace'%20font-size='13'%20font-weight='700'%20fill='%23fff'%20text-anchor='middle'%3EHS%3C/text%3E%3C/svg%3E" />
+
+<!-- Open Graph / Twitter -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Hamza Salman — AI Engineer" />
+<meta property="og:description" content="AI Engineer building agentic AI systems, RAG pipelines, and enterprise AI platforms that act on real data." />
+<meta property="og:url" content="https://hamzakalid.github.io/me/" />
+<meta property="og:site_name" content="Hamza Salman" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:image" content="https://hamzakalid.github.io/me/og-image.svg" />
+<meta property="og:image:alt" content="Hamza Salman — AI Engineer building agentic AI systems." />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Hamza Salman — AI Engineer" />
+<meta name="twitter:description" content="AI Engineer building agentic AI systems, RAG pipelines, and enterprise AI platforms that act on real data." />
+<meta name="twitter:image" content="https://hamzakalid.github.io/me/og-image.svg" />
+
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<!-- structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Hamza Salman",
+  "jobTitle": "AI Engineer",
+  "description": "AI Engineer building agentic AI systems, RAG pipelines, and enterprise AI platforms.",
+  "email": "dev.hamzakhaled@gmail.com",
+  "telephone": "+966561912377",
+  "url": "https://hamzakalid.github.io/me/",
+  "address": { "@type": "PostalAddress", "addressLocality": "Riyadh", "addressCountry": "SA" },
+  "sameAs": ["https://www.linkedin.com/in/hamzasalman727"],
+  "knowsAbout": ["Agentic AI", "Retrieval-Augmented Generation", "Knowledge Graphs", "Machine Learning", "LLM Orchestration", "Vector Search", "ERP Integration"],
+  "alumniOf": { "@type": "CollegeOrUniversity", "name": "University of Aden" },
+  "worksFor": { "@type": "Organization", "name": "Al-Obeikan Digital Solutions" }
+}
+</script>
+
 <style>
   :root{
+    color-scheme:light;
+    /* surfaces */
     --frost:#EEF1F6;
     --frost-2:#F8FAFD;
     --paper:rgba(255,255,255,.62);
+    --card-grad:linear-gradient(180deg,rgba(255,255,255,.66),rgba(255,255,255,.40));
+    --nav-bg:rgba(238,241,246,.72);
+    --ghost-bg:rgba(255,255,255,.5);
+    --chip-bg:rgba(255,255,255,.45);
+    --raised-hover:#ffffff;
+    --row-hover-bg:rgba(255,255,255,.35);
+    /* text */
     --ink:#0B1220;
     --ink-2:#1b2438;
     --slate:#55617B;
-    --slate-2:#7c869c;
+    --slate-2:#626C86;
+    /* accent */
     --cobalt:#2740E6;
     --cobalt-ink:#1c30b8;
+    --ok:#15a35b;
+    /* lines */
     --line:rgba(11,18,32,.10);
     --line-soft:rgba(11,18,32,.06);
+    /* primary button */
+    --btn-primary-bg:linear-gradient(180deg,#1f283f,#0B1220);
+    --btn-primary-fg:#ffffff;
+    --btn-primary-shadow:0 12px 30px -14px rgba(11,18,32,.6),inset 0 1px 0 rgba(255,255,255,.08);
+    --btn-primary-shadow-h:0 20px 44px -16px rgba(11,18,32,.6),inset 0 1px 0 rgba(255,255,255,.12);
+    /* brand mark */
+    --mark-bg:#0B1220;
+    --mark-fg:#ffffff;
+    /* hero name gradient */
+    --name-grad-2:#39435e;
+    /* living background */
+    --bg-line:rgb(11,18,32);
+    --bg-glow:rgb(39,64,230);
+    --scrim:rgba(238,241,246,.55);
+
     --maxw:1140px;
     --gut:clamp(20px,5vw,72px);
     --r:18px;
+  }
+
+  [data-theme="dark"]{
+    color-scheme:dark;
+    --frost:#0A0E19;
+    --frost-2:#121A30;
+    --paper:rgba(255,255,255,.035);
+    --card-grad:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+    --nav-bg:rgba(10,14,25,.74);
+    --ghost-bg:rgba(255,255,255,.05);
+    --chip-bg:rgba(255,255,255,.04);
+    --raised-hover:rgba(255,255,255,.10);
+    --row-hover-bg:rgba(255,255,255,.04);
+    --ink:#EAF0FA;
+    --ink-2:#cdd6e8;
+    --slate:#9BA8C2;
+    --slate-2:#7a87a3;
+    --cobalt:#5A72FF;
+    --cobalt-ink:#9DACFF;
+    --ok:#34d27f;
+    --line:rgba(255,255,255,.12);
+    --line-soft:rgba(255,255,255,.07);
+    --btn-primary-bg:linear-gradient(180deg,#FFFFFF,#E7ECF6);
+    --btn-primary-fg:#0B0F1A;
+    --btn-primary-shadow:0 12px 30px -16px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.7);
+    --btn-primary-shadow-h:0 20px 46px -18px rgba(0,0,0,.75),inset 0 1px 0 rgba(255,255,255,.8);
+    --mark-bg:#EAF0FA;
+    --mark-fg:#0B0F1A;
+    --name-grad-2:#7f8cae;
+    --bg-line:rgb(140,155,190);
+    --bg-glow:rgb(120,140,255);
+    --scrim:rgba(10,14,25,.62);
   }
 
   *{box-sizing:border-box;margin:0;padding:0}
@@ -31,23 +145,42 @@
   body{
     font-family:"Inter",system-ui,-apple-system,sans-serif;
     color:var(--ink);
-    background:
-      radial-gradient(120% 80% at 50% -10%, var(--frost-2), transparent 60%),
-      var(--frost);
+    background-color:var(--frost);
+    background-image:radial-gradient(120% 80% at 50% -10%, var(--frost-2), transparent 60%);
     line-height:1.6;
     overflow-x:hidden;
     -webkit-font-smoothing:antialiased;
+    transition:background-color .45s ease,color .45s ease;
   }
   ::selection{background:rgba(39,64,230,.18);color:var(--ink)}
   a{color:inherit;text-decoration:none}
   img,svg{display:block}
+
+  /* visible focus for keyboard users */
+  :where(a,button,[tabindex]):focus-visible{
+    outline:2px solid var(--cobalt);
+    outline-offset:3px;
+    border-radius:8px;
+  }
+  #top:focus,#top:focus-visible{outline:none}
+
+  /* skip link */
+  .skip{
+    position:fixed;top:10px;left:10px;z-index:200;
+    transform:translateY(-160%);
+    background:var(--mark-bg);color:var(--mark-fg);
+    font-family:"JetBrains Mono",monospace;font-size:.78rem;
+    padding:11px 16px;border-radius:11px;
+    transition:transform .3s cubic-bezier(.2,.7,.2,1);
+  }
+  .skip:focus{transform:none}
 
   /* ---------- living background ---------- */
   .bg{position:fixed;inset:0;z-index:0;pointer-events:none;will-change:transform}
   .bg svg{position:absolute;inset:0;width:100%;height:100%}
   .bg::after{ /* gentle scrim to protect text legibility */
     content:"";position:absolute;inset:0;
-    background:radial-gradient(110% 70% at 50% 35%, transparent 40%, rgba(238,241,246,.55));
+    background:radial-gradient(110% 70% at 50% 35%, transparent 40%, var(--scrim));
   }
   @keyframes flow{to{stroke-dashoffset:0}}
   @keyframes glow{0%,100%{opacity:.28}50%{opacity:.6}}
@@ -84,8 +217,8 @@
   .nav{
     position:fixed;top:0;left:0;right:0;z-index:50;
     transform:translateY(-110%);opacity:0;
-    transition:transform .55s cubic-bezier(.2,.7,.2,1),opacity .55s;
-    background:rgba(238,241,246,.72);backdrop-filter:blur(14px) saturate(1.4);
+    transition:transform .55s cubic-bezier(.2,.7,.2,1),opacity .55s,background .45s ease;
+    background:var(--nav-bg);backdrop-filter:blur(14px) saturate(1.4);
     border-bottom:1px solid var(--line-soft);
   }
   .nav.show{transform:none;opacity:1}
@@ -94,15 +227,18 @@
   .mark{display:flex;align-items:center;gap:11px;font-family:"Space Grotesk",sans-serif;
     font-weight:600;letter-spacing:-.01em}
   .mark b{font-family:"JetBrains Mono",monospace;font-weight:600;font-size:.82rem;
-    background:var(--ink);color:#fff;width:30px;height:30px;border-radius:9px;
-    display:grid;place-items:center;letter-spacing:0}
+    background:var(--mark-bg);color:var(--mark-fg);width:30px;height:30px;border-radius:9px;
+    display:grid;place-items:center;letter-spacing:0;transition:background .45s ease,color .45s ease}
   .navlinks{display:flex;gap:30px;align-items:center}
   .navlinks a{font-family:"JetBrains Mono",monospace;font-size:.76rem;letter-spacing:.08em;
-    text-transform:uppercase;color:var(--slate);position:relative;padding:4px 0}
+    text-transform:uppercase;color:var(--slate);position:relative;padding:4px 0;
+    transition:color .3s ease}
   .navlinks a::after{content:"";position:absolute;left:0;bottom:-2px;height:1px;width:0;
     background:var(--cobalt);transition:width .35s ease}
   .navlinks a:hover{color:var(--ink)}
   .navlinks a:hover::after{width:100%}
+  .navlinks a.active{color:var(--ink)}
+  .navlinks a.active::after{width:100%}
 
   /* ---------- buttons ---------- */
   .btn{display:inline-flex;align-items:center;gap:11px;font-weight:600;font-size:1rem;
@@ -110,10 +246,11 @@
     transition:transform .32s cubic-bezier(.2,.7,.2,1),box-shadow .32s,border-color .32s,background .32s,color .25s}
   .btn .arw{transition:transform .32s cubic-bezier(.2,.7,.2,1);opacity:.8}
   .btn:hover .arw{transform:translateX(5px);opacity:1}
-  .btn-primary{background:linear-gradient(180deg,#1a2238,var(--ink));color:#fff;
-    box-shadow:0 12px 30px -14px rgba(11,18,32,.6),inset 0 1px 0 rgba(255,255,255,.08)}
-  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 20px 44px -16px rgba(11,18,32,.6),inset 0 1px 0 rgba(255,255,255,.12)}
-  .btn-ghost{background:rgba(255,255,255,.5);border-color:var(--line);color:var(--ink);backdrop-filter:blur(8px)}
+  .btn:active{transform:translateY(0) scale(.985)}
+  .btn-primary{background:var(--btn-primary-bg);color:var(--btn-primary-fg);
+    box-shadow:var(--btn-primary-shadow)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:var(--btn-primary-shadow-h)}
+  .btn-ghost{background:var(--ghost-bg);border-color:var(--line);color:var(--ink);backdrop-filter:blur(8px)}
   .btn-ghost:hover{transform:translateY(-2px);border-color:rgba(39,64,230,.5);color:var(--cobalt-ink)}
 
   /* ---------- hero ---------- */
@@ -121,13 +258,22 @@
     padding-block:clamp(96px,16vh,140px)}
   .hero__in{width:min(var(--maxw),100% - var(--gut)*2);margin-inline:auto;will-change:transform,opacity}
   .hero .eyebrow{margin-bottom:26px}
+  .avail{display:flex;width:max-content;max-width:100%;align-items:center;gap:9px;margin-bottom:20px;
+    font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--slate);
+    padding:7px 14px 7px 11px;border:1px solid var(--line);border-radius:999px;
+    background:var(--ghost-bg);backdrop-filter:blur(8px)}
+  .avail .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);position:relative;flex:none}
+  .avail .dot::after{content:"";position:absolute;inset:-4px;border-radius:50%;
+    border:1px solid var(--ok);opacity:.5;animation:ping 2.4s cubic-bezier(.2,.7,.2,1) infinite}
+  @keyframes ping{0%{transform:scale(.7);opacity:.6}70%,100%{transform:scale(1.7);opacity:0}}
   .name{font-family:"Space Grotesk",sans-serif;font-weight:700;
     font-size:clamp(2.9rem,11.5vw,8.6rem);line-height:.93;letter-spacing:-.035em;
     margin-bottom:30px}
   .word{display:inline-block}
   .word:not(:last-child){margin-right:.28em}
   .letter{display:inline-block;will-change:transform,opacity;
-    background-image:linear-gradient(115deg,var(--ink),#39435e);
+    background-image:linear-gradient(115deg,var(--ink),var(--name-grad-2));
     -webkit-background-clip:text;background-clip:text;color:transparent}
   .hero__role{font-family:"Space Grotesk",sans-serif;font-weight:500;
     font-size:clamp(1.25rem,3vw,2.05rem);line-height:1.2;letter-spacing:-.02em;
@@ -138,10 +284,10 @@
   .hero__cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
   .socials{display:flex;gap:8px;margin-top:30px}
   .socials a{width:42px;height:42px;border-radius:11px;border:1px solid var(--line);
-    background:rgba(255,255,255,.5);display:grid;place-items:center;color:var(--slate);
+    background:var(--ghost-bg);display:grid;place-items:center;color:var(--slate);
     transition:transform .3s,color .3s,border-color .3s,background .3s}
   .socials a:hover{transform:translateY(-3px);color:var(--cobalt-ink);
-    border-color:rgba(39,64,230,.4);background:#fff}
+    border-color:rgba(39,64,230,.4);background:var(--raised-hover)}
   .socials svg{width:18px;height:18px}
 
   .cue{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);
@@ -171,7 +317,7 @@
   .about__grid{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(32px,5vw,76px);align-items:start}
   .stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);
     border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-top:8px}
-  .stat{background:var(--frost);padding:22px 22px}
+  .stat{background:var(--frost);padding:22px 22px;transition:background .45s ease}
   .stat b{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:clamp(1.7rem,3.4vw,2.5rem);
     letter-spacing:-.02em;display:block;color:var(--ink)}
   .stat span{font-family:"JetBrains Mono",monospace;font-size:.7rem;letter-spacing:.12em;
@@ -181,7 +327,7 @@
   .stack{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:50px}
   .grp{padding:clamp(22px,2.6vw,32px);border:1px solid var(--line);border-radius:var(--r);
     background:var(--paper);backdrop-filter:blur(10px);
-    transition:border-color .4s,transform .5s cubic-bezier(.2,.7,.2,1)}
+    transition:border-color .4s,transform .5s cubic-bezier(.2,.7,.2,1),background .45s ease}
   .grp:hover{border-color:rgba(39,64,230,.32);transform:translateY(-4px)}
   .grp h3{font-family:"JetBrains Mono",monospace;font-size:.74rem;letter-spacing:.16em;
     text-transform:uppercase;color:var(--cobalt-ink);margin-bottom:18px;display:flex;gap:10px;align-items:center}
@@ -189,17 +335,17 @@
   .chips{display:flex;flex-wrap:wrap;gap:8px}
   .chip{font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.02em;
     padding:6px 11px;border:1px solid var(--line);border-radius:999px;color:var(--slate);
-    background:rgba(255,255,255,.45);transition:color .3s,border-color .3s,background .3s}
+    background:var(--chip-bg);transition:color .3s,border-color .3s,background .3s}
   .grp:hover .chip{border-color:var(--line)}
-  .chip:hover{color:var(--ink);border-color:rgba(39,64,230,.4);background:#fff}
+  .chip:hover{color:var(--ink);border-color:rgba(39,64,230,.4);background:var(--raised-hover)}
 
   /* ---------- work ---------- */
   .works{display:flex;flex-direction:column;gap:20px;margin-top:50px}
   .proj{position:relative;display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,3vw,46px);
     padding:clamp(26px,3.4vw,46px);border:1px solid var(--line);border-radius:22px;
-    background:linear-gradient(180deg,rgba(255,255,255,.66),rgba(255,255,255,.4));
+    background:var(--card-grad);
     backdrop-filter:blur(10px);
-    transition:transform .55s cubic-bezier(.2,.7,.2,1),border-color .45s,box-shadow .55s}
+    transition:transform .55s cubic-bezier(.2,.7,.2,1),border-color .45s,box-shadow .55s,background .45s ease}
   .proj:hover{transform:translateY(-6px);border-color:rgba(39,64,230,.42);
     box-shadow:0 30px 70px -34px rgba(39,64,230,.5)}
   .proj__num{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:.9rem;
@@ -241,7 +387,7 @@
     padding:clamp(20px,2.6vw,28px) 6px;border-top:1px solid var(--line);
     transition:padding .4s cubic-bezier(.2,.7,.2,1),color .3s,background .3s}
   .crow:last-child{border-bottom:1px solid var(--line)}
-  .crow:hover{padding-left:18px;color:var(--cobalt-ink);background:rgba(255,255,255,.35)}
+  .crow:hover{padding-left:18px;color:var(--cobalt-ink);background:var(--row-hover-bg)}
   .crow__l{display:flex;flex-direction:column;gap:6px;min-width:0}
   .crow__lab{font-family:"JetBrains Mono",monospace;font-size:.7rem;letter-spacing:.16em;
     text-transform:uppercase;color:var(--slate-2)}
@@ -252,9 +398,26 @@
 
   footer{border-top:1px solid var(--line-soft);margin-top:clamp(60px,9vh,120px)}
   .foot{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center;
-    padding-block:30px;font-family:"JetBrains Mono",monospace;font-size:.72rem;
+    padding:30px 0 88px;font-family:"JetBrains Mono",monospace;font-size:.72rem;
     letter-spacing:.08em;text-transform:uppercase;color:var(--slate-2)}
+  .foot a{color:var(--slate-2);transition:color .3s}
   .foot a:hover{color:var(--cobalt-ink)}
+
+  /* ---------- theme toggle ---------- */
+  .theme-toggle{
+    position:fixed;right:clamp(16px,3vw,28px);bottom:clamp(16px,3vw,28px);z-index:70;
+    width:46px;height:46px;border-radius:14px;display:grid;place-items:center;cursor:pointer;
+    background:var(--nav-bg);backdrop-filter:blur(14px) saturate(1.4);
+    border:1px solid var(--line);color:var(--ink);
+    box-shadow:0 12px 30px -14px rgba(11,18,32,.45);
+    transition:transform .3s cubic-bezier(.2,.7,.2,1),border-color .3s,color .3s,background .45s ease}
+  .theme-toggle:hover{transform:translateY(-3px);border-color:rgba(39,64,230,.45);color:var(--cobalt-ink)}
+  .theme-toggle:active{transform:translateY(0) scale(.94)}
+  .theme-toggle svg{width:20px;height:20px}
+  .theme-toggle .i-sun{display:none}
+  .theme-toggle .i-moon{display:block}
+  [data-theme="dark"] .theme-toggle .i-sun{display:block}
+  [data-theme="dark"] .theme-toggle .i-moon{display:none}
 
   /* ---------- responsive ---------- */
   @media (max-width:820px){
@@ -280,11 +443,19 @@
 </head>
 <body>
 
+<a class="skip" href="#top">Skip to content</a>
+
 <div class="progress" id="progress"></div>
 <div class="bg" id="bg" aria-hidden="true"></div>
 
+<!-- theme toggle -->
+<button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark theme">
+  <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.6M12 18.9v2.6M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M2.5 12h2.6M18.9 12h2.6M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"/></svg>
+</button>
+
 <!-- nav (appears on scroll) -->
-<nav class="nav" id="nav">
+<nav class="nav" id="nav" aria-label="Primary">
   <div class="nav__in">
     <a class="mark" href="#top"><b>HS</b><span>Hamza Salman</span></a>
     <div class="navlinks">
@@ -300,11 +471,12 @@
   </div>
 </nav>
 
-<main class="shell" id="top">
+<main class="shell" id="top" tabindex="-1">
 
   <!-- HERO -->
   <header class="hero">
     <div class="hero__in" id="heroIn">
+      <p class="avail li li-1"><span class="dot" aria-hidden="true"></span>Available for AI &amp; agentic-engineering roles</p>
       <div class="eyebrow li li-1">AI Engineer — Riyadh, SA</div>
       <h1 class="name" id="heroName">Hamza Salman</h1>
       <p class="hero__role li li-2">I build AI agents that reason over enterprise data — <span class="hl">and act on it.</span></p>
@@ -315,25 +487,25 @@
       </div>
       <div class="socials li li-5">
         <a href="https://www.linkedin.com/in/hamzasalman727" target="_blank" rel="noopener" aria-label="LinkedIn">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5A2.5 2.5 0 1 1 0 3.5a2.5 2.5 0 0 1 4.98 0zM.3 8.2h4.4V24H.3V8.2zm7.5 0h4.2v2.16h.06c.58-1.1 2-2.26 4.12-2.26 4.4 0 5.22 2.9 5.22 6.67V24h-4.4v-6.6c0-1.57-.03-3.6-2.2-3.6-2.2 0-2.54 1.72-2.54 3.49V24H7.8V8.2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5A2.5 2.5 0 1 1 0 3.5a2.5 2.5 0 0 1 4.98 0zM.3 8.2h4.4V24H.3V8.2zm7.5 0h4.2v2.16h.06c.58-1.1 2-2.26 4.12-2.26 4.4 0 5.22 2.9 5.22 6.67V24h-4.4v-6.6c0-1.57-.03-3.6-2.2-3.6-2.2 0-2.54 1.72-2.54 3.49V24H7.8V8.2z"/></svg>
         </a>
         <a href="mailto:dev.hamzakhaled@gmail.com" aria-label="Email">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="m3.5 6 8.5 6 8.5-6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="m3.5 6 8.5 6 8.5-6"/></svg>
         </a>
         <a href="tel:+966561912377" aria-label="Phone">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6.5 3.5h3l1.5 4-2 1.5a12 12 0 0 0 5.5 5.5l1.5-2 4 1.5v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.5 5.7 2 2 0 0 1 6.5 3.5z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6.5 3.5h3l1.5 4-2 1.5a12 12 0 0 0 5.5 5.5l1.5-2 4 1.5v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.5 5.7 2 2 0 0 1 6.5 3.5z"/></svg>
         </a>
       </div>
     </div>
-    <div class="cue li li-6"><span>Scroll</span><i></i></div>
+    <div class="cue li li-6" aria-hidden="true"><span>Scroll</span><i></i></div>
   </header>
 
   <!-- ABOUT -->
-  <section class="section" id="about">
+  <section class="section" id="about" aria-labelledby="about-h">
     <div class="wrap about__grid">
       <div>
         <div class="eyebrow reveal">01 — About</div>
-        <h2 class="head reveal">Engineer who ships agents, not demos.</h2>
+        <h2 class="head reveal" id="about-h">Engineer who ships agents, not demos.</h2>
         <p class="lede reveal">I'm an AI engineer with 4+ years in software engineering and 3+ years building production AI systems. My focus is agentic AI — systems that plan, decide, and execute against real enterprise data, rather than just answer questions.</p>
         <p class="lede reveal">I've delivered enterprise AI platforms end to end: agent architectures and orchestration loops, RAG and vector retrieval, knowledge graphs, guardrails, evaluation, and the data pipelines underneath. The bar I hold is simple — reliable, secure, and actually in production.</p>
       </div>
@@ -349,10 +521,10 @@
   </section>
 
   <!-- STACK -->
-  <section class="section section--tight" id="stack">
+  <section class="section section--tight" id="stack" aria-labelledby="stack-h">
     <div class="wrap">
       <div class="eyebrow reveal">02 — Stack</div>
-      <h2 class="head reveal">The toolkit behind the agents.</h2>
+      <h2 class="head reveal" id="stack-h">The toolkit behind the agents.</h2>
       <div class="stack">
         <div class="grp reveal">
           <h3>AI Agents &amp; LLMs <em>// core</em></h3>
@@ -393,16 +565,16 @@
   </section>
 
   <!-- WORK -->
-  <section class="section section--tight" id="work">
+  <section class="section section--tight" id="work" aria-labelledby="work-h">
     <div class="wrap">
       <div class="eyebrow reveal">03 — Selected work</div>
-      <h2 class="head reveal">Three systems, one idea: AI that acts.</h2>
+      <h2 class="head reveal" id="work-h">Three systems, one idea: AI that acts.</h2>
       <div class="works">
 
         <article class="proj reveal">
           <div class="proj__num">01</div>
           <div>
-            <div class="proj__t">Nawras AI Platform</div>
+            <h3 class="proj__t">Nawras AI Platform</h3>
             <div class="proj__d">Enterprise platform for automation &amp; agentic AI</div>
             <p class="proj__p">A low-code, drag-and-drop builder for multi-step agentic workflows. Routes across multiple LLM providers behind one interface; grounds responses with RAG and Graph RAG over embeddings and vector retrieval; and ships with guardrails, RAG-based evaluation, memory, a tools builder, MCP connectivity, and end-to-end tracing and monitoring.</p>
             <div class="chips">
@@ -416,7 +588,7 @@
         <article class="proj reveal">
           <div class="proj__num">02</div>
           <div>
-            <div class="proj__t">X10</div>
+            <h3 class="proj__t">X10</h3>
             <div class="proj__d">Agentic AI for the Nawras ERP</div>
             <p class="proj__p">An ERP-connected agent built on ontology and semantic layers so it genuinely understands enterprise data — then performs autonomous decision-making and intelligent task execution. Runs an agent loop and tool loop with a skills system for sharper task decomposition, plus a Python sandbox that analyzes data with code, reads uploaded files and images, and generates files for users.</p>
             <div class="chips">
@@ -430,7 +602,7 @@
         <article class="proj reveal">
           <div class="proj__num">03</div>
           <div>
-            <div class="proj__t">BI Agent</div>
+            <h3 class="proj__t">BI Agent</h3>
             <div class="proj__d">Conversational analytics over enterprise data</div>
             <p class="proj__p">An analytics agent that turns natural-language questions into T-SQL over enterprise databases. A semantic layer and knowledge graph map business terms to data models for accurate, explainable answers — and results render through an integrated dashboard builder, turning queries into interactive, decision-ready views.</p>
             <div class="chips">
@@ -445,14 +617,14 @@
   </section>
 
   <!-- PATH -->
-  <section class="section section--tight" id="path">
+  <section class="section section--tight" id="path" aria-labelledby="path-h">
     <div class="wrap">
       <div class="eyebrow reveal">04 — Path</div>
-      <h2 class="head reveal">From full-stack to autonomous systems.</h2>
+      <h2 class="head reveal" id="path-h">From full-stack to autonomous systems.</h2>
       <div class="tl">
         <div class="tl-item reveal">
           <div class="tl-when">Jan 2023 — Present</div>
-          <div class="tl-role">AI Developer &amp; Automation Engineer</div>
+          <h3 class="tl-role">AI Developer &amp; Automation Engineer</h3>
           <div class="tl-org">Al-Obeikan Digital Solutions <em>— AI &amp; Invention Dept · Riyadh</em></div>
           <ul class="tl-list">
             <li>Built the company's AI engine as a modular microservices system — data pipelines, distributed training, evaluation, and an API gateway with RabbitMQ and gRPC.</li>
@@ -462,7 +634,7 @@
         </div>
         <div class="tl-item reveal">
           <div class="tl-when">Feb 2022 — Dec 2022</div>
-          <div class="tl-role">Full-Stack Developer</div>
+          <h3 class="tl-role">Full-Stack Developer</h3>
           <div class="tl-org">Smartmainds <em>— Dubai, UAE</em></div>
           <ul class="tl-list">
             <li>Built front-end UI in Angular 11 + Angular Material with Firebase for real-time data and auth.</li>
@@ -471,7 +643,7 @@
         </div>
         <div class="tl-item reveal">
           <div class="tl-when">2017 — 2021</div>
-          <div class="tl-role">B.Sc. Computer Programming</div>
+          <h3 class="tl-role">B.Sc. Computer Programming</h3>
           <div class="tl-org">University of Aden <em>— Faculty of Computer &amp; Information Technology</em></div>
           <ul class="tl-list">
             <li>Graduated 3rd in class with a GPA of 4.69.</li>
@@ -482,23 +654,23 @@
   </section>
 
   <!-- CONTACT -->
-  <section class="section" id="contact">
+  <section class="section" id="contact" aria-labelledby="contact-h">
     <div class="wrap">
       <div class="eyebrow reveal">05 — Contact</div>
-      <h2 class="contact__head reveal">Let's build AI<br>that <span class="hl">acts.</span></h2>
+      <h2 class="contact__head reveal" id="contact-h">Let's build AI<br>that <span class="hl">acts.</span></h2>
       <p class="contact__sub reveal">Open to AI and agentic-engineering roles. Email is the fastest way to reach me.</p>
       <div class="crows reveal">
         <a class="crow" href="mailto:dev.hamzakhaled@gmail.com">
           <span class="crow__l"><span class="crow__lab">Email</span><span class="crow__v">dev.hamzakhaled@gmail.com</span></span>
-          <span class="arw">→</span>
+          <span class="arw" aria-hidden="true">→</span>
         </a>
         <a class="crow" href="https://www.linkedin.com/in/hamzasalman727" target="_blank" rel="noopener">
           <span class="crow__l"><span class="crow__lab">LinkedIn</span><span class="crow__v">/in/hamzasalman727</span></span>
-          <span class="arw">→</span>
+          <span class="arw" aria-hidden="true">→</span>
         </a>
         <a class="crow" href="tel:+966561912377">
           <span class="crow__l"><span class="crow__lab">Phone</span><span class="crow__v">+966 56 191 2377</span></span>
-          <span class="arw">→</span>
+          <span class="arw" aria-hidden="true">→</span>
         </a>
       </div>
     </div>
@@ -506,9 +678,9 @@
 
   <footer>
     <div class="wrap foot">
-      <span>Hamza Salman</span>
+      <span>© <span id="yr"></span> Hamza Salman</span>
       <span>Riyadh, Saudi Arabia</span>
-      <span>© <span id="yr"></span> — Built with motion</span>
+      <a href="#top">Back to top ↑</a>
     </div>
   </footer>
 
@@ -539,9 +711,10 @@
         p.setAttribute("d", d);
         var op = Math.min(0.46, 0.04 + i*0.012);
         var foreground = i >= 28;
-        p.setAttribute("stroke", foreground
-          ? "rgba(39,64,230,"+(op*1.05).toFixed(3)+")"
-          : "rgba(11,18,32,"+(op*0.85).toFixed(3)+")");
+        // stroke color comes from a CSS variable so it adapts to light/dark instantly;
+        // per-path alpha lives in stroke-opacity (the glow animation drives element opacity)
+        p.style.stroke = foreground ? "var(--bg-glow)" : "var(--bg-line)";
+        p.style.strokeOpacity = (foreground ? op*1.05 : op*0.85).toFixed(3);
         p.setAttribute("stroke-width", (0.6 + i*0.05).toFixed(2));
         svg.appendChild(p);
       }
@@ -587,6 +760,27 @@
     });
   }
 
+  /* ---- theme toggle (persisted + system aware) ---- */
+  function theme(){
+    var root = document.documentElement;
+    var btn  = document.getElementById("themeToggle");
+    var meta = document.getElementById("metaTheme");
+    var COL  = { light:"#EEF1F6", dark:"#0A0E19" };
+    function apply(t){
+      root.setAttribute("data-theme", t);
+      if(meta) meta.setAttribute("content", COL[t] || COL.light);
+      if(btn)  btn.setAttribute("aria-label", t==="dark" ? "Switch to light theme" : "Switch to dark theme");
+    }
+    apply(root.getAttribute("data-theme") === "dark" ? "dark" : "light");
+    if(btn){
+      btn.addEventListener("click", function(){
+        var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        try { localStorage.setItem("theme", next); } catch(e){}
+        apply(next);
+      });
+    }
+  }
+
   /* ---- scroll reveals ---- */
   function reveals(){
     var items = document.querySelectorAll(".reveal");
@@ -606,6 +800,30 @@
       });
     }, { threshold:0.16, rootMargin:"0px 0px -8% 0px" });
     items.forEach(function(it){ io.observe(it); });
+  }
+
+  /* ---- scroll-spy: highlight the section currently in view ---- */
+  function navSpy(){
+    var links = Array.prototype.slice.call(document.querySelectorAll(".navlinks a"));
+    if(!links.length || !("IntersectionObserver" in window)) return;
+    var map = {};
+    links.forEach(function(a){
+      var href = a.getAttribute("href");
+      if(href && href.charAt(0) === "#") map[href.slice(1)] = a;
+    });
+    var sections = Object.keys(map)
+      .map(function(id){ return document.getElementById(id); })
+      .filter(Boolean);
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          links.forEach(function(a){ a.classList.remove("active"); });
+          var a = map[e.target.id];
+          if(a) a.classList.add("active");
+        }
+      });
+    }, { rootMargin:"-45% 0px -50% 0px", threshold:0 });
+    sections.forEach(function(s){ io.observe(s); });
   }
 
   /* ---- scroll-driven: progress, nav, hero parallax, bg drift ---- */
@@ -641,9 +859,11 @@
   }
 
   document.getElementById("yr").textContent = new Date().getFullYear();
+  theme();
   buildPaths();
   splitName();
   reveals();
+  navSpy();
   scrollFx();
 })();
 </script>
