@@ -443,45 +443,6 @@
   .proj__link:hover{gap:13px}
   .proj__link:hover .arw{transform:translateX(4px)}
 
-  /* ---------- project gallery / carousel ---------- */
-  .gallery{margin-top:26px}
-  .gallery__viewport{position:relative;overflow-x:auto;scroll-snap-type:x mandatory;
-    scrollbar-width:none;-ms-overflow-style:none}
-  .gallery__viewport::-webkit-scrollbar{display:none}
-  .gallery__track{display:flex;gap:14px}
-  .slide{flex:0 0 88%;scroll-snap-align:center;min-width:0}
-  @media(min-width:560px){.slide{flex:0 0 74%}}
-  @media(min-width:900px){.slide{flex:0 0 64%}}
-  .slide__art{position:relative;aspect-ratio:16/10;border-radius:14px;overflow:hidden;
-    background:radial-gradient(130% 130% at 12% 6%,#1c2c63,#0a1230 62%);
-    border:1px solid rgba(255,255,255,.10);display:grid;place-items:center;
-    transform-origin:center center;will-change:transform,opacity}
-  .slide__art::before{content:"";position:absolute;inset:0;opacity:.55;pointer-events:none}
-  .slide__art::after{content:"";position:absolute;inset:0;pointer-events:none;
-    background:radial-gradient(72% 60% at 82% 2%,rgba(90,114,255,.55),transparent 60%)}
-  .slide__ico{position:relative;z-index:1;width:33%;max-width:104px;color:#cfd9ff;
-    filter:drop-shadow(0 8px 26px rgba(40,64,230,.55))}
-  .slide__ico svg{width:100%;height:auto;display:block}
-  .slide__cap{margin-top:12px}
-  .slide__cap b{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:1.02rem;
-    letter-spacing:-.01em;display:block;color:var(--ink)}
-  .slide__cap span{color:var(--slate);font-size:.9rem;line-height:1.5;display:block;margin-top:3px}
-  .art--flow::before{background-image:radial-gradient(rgba(255,255,255,.16) 1.4px,transparent 1.6px);background-size:24px 24px}
-  .art--graph::before{background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.09) 0 1.5px,transparent 1.5px 18px)}
-  .art--metrics::before{background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.07) 0 1.5px,transparent 1.5px 20px),linear-gradient(to top,rgba(90,114,255,.4),transparent 62%)}
-  .art--loop::before{background-image:repeating-radial-gradient(circle at 50% 46%,rgba(255,255,255,.10) 0 1.5px,transparent 1.5px 26px)}
-  .art--code::before{background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.08) 0 1.5px,transparent 1.5px 22px)}
-  .gallery__ctrl{display:flex;align-items:center;gap:14px;margin-top:14px}
-  .g-btn{width:38px;height:38px;border-radius:11px;border:1px solid var(--line);background:var(--ghost-bg);
-    color:var(--ink);display:grid;place-items:center;cursor:pointer;font-size:1.15rem;line-height:1;
-    transition:transform .3s cubic-bezier(.2,.7,.2,1),border-color .3s,color .3s,background .3s}
-  .g-btn:hover{transform:translateY(-2px);border-color:rgba(39,64,230,.45);color:var(--cobalt-ink)}
-  .g-btn:active{transform:scale(.92)}
-  .gallery__dots{display:flex;gap:7px;flex:1;justify-content:center}
-  .g-dot{width:8px;height:8px;border-radius:999px;border:0;padding:0;cursor:pointer;background:var(--line);
-    transition:background .3s,width .3s cubic-bezier(.2,.7,.2,1)}
-  .g-dot.active{background:var(--cobalt);width:22px}
-
   /* ---------- responsive ---------- */
   @media (max-width:820px){
     .about__grid{grid-template-columns:1fr}
@@ -507,18 +468,6 @@
 <body>
 
 <a class="skip" href="#top">Skip to content</a>
-
-<!-- icon sprite for project galleries -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-  <symbol id="ico-flow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.3"/><circle cx="5" cy="18" r="2.3"/><circle cx="19" cy="12" r="2.3"/><path d="m7.2 7 9.6 4M7.2 17l9.6-4"/></symbol>
-  <symbol id="ico-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 21 8l-9 5-9-5z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/></symbol>
-  <symbol id="ico-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2.5-7 4 14 2.5-7H21"/></symbol>
-  <symbol id="ico-graph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="7" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="17" r="2"/><path d="m7.8 8.2 8 8.6M8 7l8-.8M7 15V9M16.4 7.5 17 16"/></symbol>
-  <symbol id="ico-loop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 13.6-5.7M18 3.5V8h-4.5"/><path d="M20 12a8 8 0 0 1-13.6 5.7M6 20.5V16h4.5"/></symbol>
-  <symbol id="ico-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 8l-4 4 4 4M15 8l4 4-4 4"/></symbol>
-  <symbol id="ico-sql" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="2.6"/><path d="M5 6v6c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6M5 12v6c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6v-6"/></symbol>
-  <symbol id="ico-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M6 20v-6M11 20V8M16 20v-9"/></symbol>
-</svg>
 
 <div class="progress" id="progress"></div>
 <div class="bg" id="bg" aria-hidden="true"><canvas id="bgCanvas"></canvas></div>
@@ -662,29 +611,6 @@
               <span class="chip">RAG &amp; Graph RAG</span><span class="chip">Guardrails</span>
               <span class="chip">Evaluation</span><span class="chip">Memory</span><span class="chip">MCP</span><span class="chip">Tracing</span>
             </div>
-            <div class="gallery" data-gallery aria-roledescription="carousel" aria-label="Nawras AI Platform gallery">
-              <div class="gallery__viewport">
-                <div class="gallery__track">
-                  <figure class="slide">
-                    <div class="slide__art art--flow"><span class="slide__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-flow"/></svg></span></div>
-                    <figcaption class="slide__cap"><b>Visual workflow builder</b><span>Drag-and-drop canvas for multi-step agentic workflows.</span></figcaption>
-                  </figure>
-                  <figure class="slide">
-                    <div class="slide__art art--graph"><span class="slide__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-layers"/></svg></span></div>
-                    <figcaption class="slide__cap"><b>RAG &amp; Graph RAG</b><span>Grounded answers over embeddings, vector search, and a knowledge graph.</span></figcaption>
-                  </figure>
-                  <figure class="slide">
-                    <div class="slide__art art--metrics"><span class="slide__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-pulse"/></svg></span></div>
-                    <figcaption class="slide__cap"><b>Guardrails, eval &amp; tracing</b><span>Production observability with RAG-based evaluation and end-to-end tracing.</span></figcaption>
-                  </figure>
-                </div>
-              </div>
-              <div class="gallery__ctrl">
-                <button class="g-btn g-prev" type="button" aria-label="Previous image">&lsaquo;</button>
-                <div class="gallery__dots"></div>
-                <button class="g-btn g-next" type="button" aria-label="Next image">&rsaquo;</button>
-              </div>
-            </div>
           </div>
         </article>
 
@@ -700,29 +626,6 @@
               <span class="chip">Agent loop</span><span class="chip">Tool loop</span><span class="chip">Skills</span>
               <span class="chip">MCP</span><span class="chip">Guardrails</span><span class="chip">Python sandbox</span>
             </div>
-            <div class="gallery" data-gallery aria-roledescription="carousel" aria-label="X10 gallery">
-              <div class="gallery__viewport">
-                <div class="gallery__track">
-                  <figure class="slide">
-                    <div class="slide__art art--loop"><span class="slide__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-graph"/></svg></span></div>
-                    <figcaption class="slide__cap"><b>Ontology &amp; semantic layers</b><span>Understands enterprise data through ontology and semantic modelling.</span></figcaption>
-                  </figure>
-                  <figure class="slide">
-                    <div class="slide__art art--flow"><span class="slide__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-loop"/></svg></span></div>
-                    <figcaption class="slide__cap"><b>Agent &amp; tool loops</b><span>Autonomous decision-making and task execution with a skills system.</span></figcaption>
-                  </figure>
-                  <figure class="slide">
-                    <div class="slide__art art--code"><span class="slide__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-code"/></svg></span></div>
-                    <figcaption class="slide__cap"><b>Python sandbox</b><span>Analyzes data with code, reads uploaded files and images, generates outputs.</span></figcaption>
-                  </figure>
-                </div>
-              </div>
-              <div class="gallery__ctrl">
-                <button class="g-btn g-prev" type="button" aria-label="Previous image">&lsaquo;</button>
-                <div class="gallery__dots"></div>
-                <button class="g-btn g-next" type="button" aria-label="Next image">&rsaquo;</button>
-              </div>
-            </div>
           </div>
         </article>
 
@@ -736,29 +639,6 @@
             <div class="chips">
               <span class="chip">T-SQL</span><span class="chip">Semantic layer</span>
               <span class="chip">Knowledge graph</span><span class="chip">Dashboard builder</span>
-            </div>
-            <div class="gallery" data-gallery aria-roledescription="carousel" aria-label="BI Agent gallery">
-              <div class="gallery__viewport">
-                <div class="gallery__track">
-                  <figure class="slide">
-                    <div class="slide__art art--graph"><span class="slide__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-sql"/></svg></span></div>
-                    <figcaption class="slide__cap"><b>Natural language to T-SQL</b><span>Ask in plain English; get accurate T-SQL over enterprise databases.</span></figcaption>
-                  </figure>
-                  <figure class="slide">
-                    <div class="slide__art art--loop"><span class="slide__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-graph"/></svg></span></div>
-                    <figcaption class="slide__cap"><b>Semantic layer &amp; knowledge graph</b><span>Business terms mapped to data models for explainable answers.</span></figcaption>
-                  </figure>
-                  <figure class="slide">
-                    <div class="slide__art art--metrics"><span class="slide__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-chart"/></svg></span></div>
-                    <figcaption class="slide__cap"><b>Dashboard builder</b><span>Results render as interactive, decision-ready dashboards.</span></figcaption>
-                  </figure>
-                </div>
-              </div>
-              <div class="gallery__ctrl">
-                <button class="g-btn g-prev" type="button" aria-label="Previous image">&lsaquo;</button>
-                <div class="gallery__dots"></div>
-                <button class="g-btn g-next" type="button" aria-label="Next image">&rsaquo;</button>
-              </div>
             </div>
           </div>
         </article>
@@ -1238,75 +1118,6 @@
     });
   }
 
-  /* ---- per-project image carousel: scroll-snap + autoplay + coverflow depth ---- */
-  function carousel(){
-    Array.prototype.slice.call(document.querySelectorAll("[data-gallery]")).forEach(function(g){
-      var vp = g.querySelector(".gallery__viewport");
-      var slides = Array.prototype.slice.call(g.querySelectorAll(".slide"));
-      var dotsWrap = g.querySelector(".gallery__dots");
-      var prev = g.querySelector(".g-prev"), next = g.querySelector(".g-next");
-      if(!vp || slides.length < 2) return;
-      var index = 0, timer = null, inView = false, paused = false, ticking = false;
-
-      var dots = slides.map(function(_, i){
-        var d = document.createElement("button");
-        d.type = "button"; d.className = "g-dot";
-        d.setAttribute("aria-label", "Go to image " + (i + 1));
-        d.addEventListener("click", function(){ go(i, true); });
-        dotsWrap.appendChild(d);
-        return d;
-      });
-
-      function clamp(i){ return (i % slides.length + slides.length) % slides.length; }
-      function go(i, user){
-        index = clamp(i);
-        slides[index].scrollIntoView({ behavior: RM ? "auto" : "smooth", inline: "center", block: "nearest" });
-        if(user) restart();
-      }
-      function paint(){
-        var mid = vp.scrollLeft + vp.clientWidth / 2, best = 0, bd = Infinity;
-        for(var i = 0; i < slides.length; i++){
-          var center = slides[i].offsetLeft + slides[i].offsetWidth / 2;
-          var dist = Math.abs(center - mid);
-          if(dist < bd){ bd = dist; best = i; }
-          if(!RM){
-            var art = slides[i].firstElementChild;
-            if(art){
-              var k = Math.min(1, dist / (vp.clientWidth || 1));
-              art.style.transform = "scale(" + (1 - k * 0.14).toFixed(3) + ")";
-              art.style.opacity = (1 - k * 0.5).toFixed(3);
-            }
-          }
-        }
-        index = best;
-        for(var j = 0; j < dots.length; j++){ dots[j].classList.toggle("active", j === index); }
-        ticking = false;
-      }
-      function schedule(){ if(!ticking){ ticking = true; requestAnimationFrame(paint); } }
-      vp.addEventListener("scroll", schedule, { passive: true });
-      if(prev) prev.addEventListener("click", function(){ go(index - 1, true); });
-      if(next) next.addEventListener("click", function(){ go(index + 1, true); });
-
-      function adv(){ if(inView && !paused) go(index + 1, false); }
-      function start(){ if(RM || timer) return; timer = setInterval(adv, 4800); }
-      function stop(){ if(timer){ clearInterval(timer); timer = null; } }
-      function restart(){ stop(); start(); }
-      ["pointerenter", "focusin"].forEach(function(ev){ g.addEventListener(ev, function(){ paused = true; }); });
-      ["pointerleave", "focusout"].forEach(function(ev){ g.addEventListener(ev, function(){ paused = false; }); });
-
-      if("IntersectionObserver" in window){
-        new IntersectionObserver(function(es){
-          es.forEach(function(e){ inView = e.isIntersecting; });
-          if(inView) start(); else stop();
-        }, { threshold: 0.4 }).observe(g);
-      } else { inView = true; start(); }
-
-      paint();
-      window.addEventListener("resize", schedule);
-      window.addEventListener("load", paint);
-    });
-  }
-
   document.getElementById("yr").textContent = new Date().getFullYear();
   theme();
   buildBackground();
@@ -1318,7 +1129,6 @@
   magnetic();
   copyEmail();
   spotlight();
-  carousel();
 })();
 </script>
 </body>
