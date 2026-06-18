@@ -436,6 +436,12 @@
     opacity:0;transition:opacity .45s ease}
   .proj:hover::after{opacity:1}
   .proj>*{position:relative;z-index:1}
+  .proj__link{display:inline-flex;align-items:center;gap:9px;margin-top:18px;
+    font-family:"JetBrains Mono",monospace;font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--cobalt-ink);transition:gap .3s cubic-bezier(.2,.7,.2,1)}
+  .proj__link .arw{transition:transform .3s cubic-bezier(.2,.7,.2,1)}
+  .proj__link:hover{gap:13px}
+  .proj__link:hover .arw{transform:translateX(4px)}
 
   /* ---------- project gallery / carousel ---------- */
   .gallery{margin-top:26px}
@@ -650,6 +656,7 @@
             <h3 class="proj__t">Nawras AI Platform</h3>
             <div class="proj__d">Enterprise platform for automation &amp; agentic AI</div>
             <p class="proj__p">A low-code, drag-and-drop builder for multi-step agentic workflows. Routes across multiple LLM providers behind one interface; grounds responses with RAG and Graph RAG over embeddings and vector retrieval; and ships with guardrails, RAG-based evaluation, memory, a tools builder, MCP connectivity, and end-to-end tracing and monitoring.</p>
+            <a class="proj__link" href="./nawras.html">View case study <span class="arw" aria-hidden="true">→</span></a>
             <div class="chips">
               <span class="chip">Drag-and-drop builder</span><span class="chip">Multi-provider</span>
               <span class="chip">RAG &amp; Graph RAG</span><span class="chip">Guardrails</span>
@@ -687,6 +694,7 @@
             <h3 class="proj__t">X10</h3>
             <div class="proj__d">Agentic AI for the Nawras ERP</div>
             <p class="proj__p">An ERP-connected agent built on ontology and semantic layers so it genuinely understands enterprise data — then performs autonomous decision-making and intelligent task execution. Runs an agent loop and tool loop with a skills system for sharper task decomposition, plus a Python sandbox that analyzes data with code, reads uploaded files and images, and generates files for users.</p>
+            <a class="proj__link" href="./x10.html">View case study <span class="arw" aria-hidden="true">→</span></a>
             <div class="chips">
               <span class="chip">Ontology layer</span><span class="chip">Semantic layer</span>
               <span class="chip">Agent loop</span><span class="chip">Tool loop</span><span class="chip">Skills</span>
@@ -724,6 +732,7 @@
             <h3 class="proj__t">BI Agent</h3>
             <div class="proj__d">Conversational analytics over enterprise data</div>
             <p class="proj__p">An analytics agent that turns natural-language questions into T-SQL over enterprise databases. A semantic layer and knowledge graph map business terms to data models for accurate, explainable answers — and results render through an integrated dashboard builder, turning queries into interactive, decision-ready views.</p>
+            <a class="proj__link" href="./bi-agent.html">View case study <span class="arw" aria-hidden="true">→</span></a>
             <div class="chips">
               <span class="chip">T-SQL</span><span class="chip">Semantic layer</span>
               <span class="chip">Knowledge graph</span><span class="chip">Dashboard builder</span>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script>(function(){try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<title>Nawras AI Platform - Case study | Hamza Salman</title>
+<meta name="description" content="Case study: Nawras AI Platform, a low-code platform for building, grounding, and shipping agentic AI workflows in production." />
+<meta name="author" content="Hamza Salman" />
+<meta name="color-scheme" content="light dark" />
+<meta name="theme-color" id="metaTheme" content="#EEF1F6" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='8'%20fill='%230B1220'/%3E%3Ctext%20x='16'%20y='21'%20font-family='monospace'%20font-size='13'%20font-weight='700'%20fill='%23fff'%20text-anchor='middle'%3EHS%3C/text%3E%3C/svg%3E" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Nawras AI Platform - Case study" />
+<meta property="og:description" content="A low-code platform for building, grounding, and shipping agentic AI workflows in production." />
+<meta property="og:url" content="https://hamzakalid.github.io/me/nawras.html" />
+<meta property="og:image" content="https://hamzakalid.github.io/me/og-image.svg" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./project.css" />
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="ico-flow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.3"/><circle cx="5" cy="18" r="2.3"/><circle cx="19" cy="12" r="2.3"/><path d="m7.2 7 9.6 4M7.2 17l9.6-4"/></symbol>
+  <symbol id="ico-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 21 8l-9 5-9-5z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/></symbol>
+  <symbol id="ico-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2.5-7 4 14 2.5-7H21"/></symbol>
+  <symbol id="ico-graph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="7" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="17" r="2"/><path d="m7.8 8.2 8 8.6M8 7l8-.8M7 15V9M16.4 7.5 17 16"/></symbol>
+  <symbol id="ico-loop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 13.6-5.7M18 3.5V8h-4.5"/><path d="M20 12a8 8 0 0 1-13.6 5.7M6 20.5V16h4.5"/></symbol>
+  <symbol id="ico-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 8l-4 4 4 4M15 8l4 4-4 4"/></symbol>
+  <symbol id="ico-sql" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="2.6"/><path d="M5 6v6c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6M5 12v6c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6v-6"/></symbol>
+  <symbol id="ico-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M6 20v-6M11 20V8M16 20v-9"/></symbol>
+</svg>
+
+<div class="progress" id="progress"></div>
+<div class="bg" id="bg" aria-hidden="true"><canvas></canvas></div>
+
+<button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark theme">
+  <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.6M12 18.9v2.6M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M2.5 12h2.6M18.9 12h2.6M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"/></svg>
+</button>
+
+<nav class="nav">
+  <div class="nav__in">
+    <a class="back" href="./index.html"><b>HS</b><span>Hamza Salman</span></a>
+    <div class="nav__r">
+      <a href="./index.html#work">Work</a>
+      <a href="./resume.html" target="_blank" rel="noopener">Résumé</a>
+      <a href="./index.html#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<main class="shell" id="main">
+
+  <header class="wrap phero">
+    <div class="eyebrow reveal">Case study</div>
+    <h1 class="ptitle reveal">Nawras AI Platform</h1>
+    <p class="plede reveal">A low-code platform for building, grounding, and shipping multi-step agentic AI workflows in production.</p>
+    <div class="phero__meta reveal">
+      <span><b>Role</b> AI Developer &amp; Automation Engineer</span>
+      <span><b>Org</b> Al-Obeikan Digital Solutions</span>
+      <span><b>Years</b> 2023 to present</span>
+    </div>
+    <div class="phero__cta reveal">
+      <a class="btn btn-primary" data-magnetic="0.3" href="./index.html#contact">Get in touch <span class="arw">&rarr;</span></a>
+      <a class="btn btn-ghost" data-magnetic="0.2" href="./index.html#work">All work <span class="arw">&rarr;</span></a>
+    </div>
+  </header>
+
+  <div class="wrap reveal">
+    <div class="banner"><span class="banner__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-flow"/></svg></span></div>
+  </div>
+
+  <section class="wrap section">
+    <div class="two-col">
+      <p class="lead reveal">Most teams can prototype an agent. Far fewer can run one reliably against real enterprise data.</p>
+      <div>
+        <p class="prose reveal">Nawras is the platform I built to close that gap. It gives teams a visual canvas to compose multi-step agentic workflows, route them across multiple LLM providers behind one interface, and ground every response in their own data through RAG and Graph RAG.</p>
+        <p class="prose reveal">Guardrails, evaluation, memory, a tools builder, MCP connectivity, and end-to-end tracing are built in. A workflow that works in a demo keeps working in production, where it is observable and safe to change.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap section">
+    <div class="eyebrow reveal">Capabilities</div>
+    <h2 class="heading-lg reveal">Everything an agent needs to leave the demo.</h2>
+    <div class="caps">
+      <article class="cap cap--feature reveal">
+        <svg class="cap__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-flow"/></svg>
+        <h3>Visual workflow builder</h3>
+        <p>A drag-and-drop canvas to compose, branch, and version multi-step agent workflows without writing glue code.</p>
+      </article>
+      <article class="cap cap--wide reveal">
+        <svg class="cap__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-loop"/></svg>
+        <h3>Multi-provider routing</h3>
+        <p>One interface in front of many LLM providers, with per-step model choice and fallback.</p>
+      </article>
+      <article class="cap cap--wide reveal">
+        <svg class="cap__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-layers"/></svg>
+        <h3>RAG and Graph RAG</h3>
+        <p>Grounding over embeddings, vector search, and a knowledge graph for accurate, explainable answers.</p>
+      </article>
+      <article class="cap reveal">
+        <svg class="cap__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-pulse"/></svg>
+        <h3>Guardrails</h3>
+        <p>Input and output checks that keep responses safe and on policy.</p>
+      </article>
+      <article class="cap reveal">
+        <svg class="cap__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-chart"/></svg>
+        <h3>Evaluation</h3>
+        <p>RAG-based scoring that catches quality regressions before they ship.</p>
+      </article>
+      <article class="cap reveal">
+        <svg class="cap__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-code"/></svg>
+        <h3>Memory and MCP</h3>
+        <p>Persistent context plus Model Context Protocol connectivity to external tools.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap section">
+    <h2 class="heading-lg reveal">How a workflow runs.</h2>
+    <div class="steps">
+      <div class="step reveal"><div class="step__n">01</div><h3>Compose</h3><p>Build the workflow visually: steps, branches, tools, and prompts on one canvas.</p></div>
+      <div class="step reveal"><div class="step__n">02</div><h3>Route</h3><p>Each step routes to the chosen LLM provider through a single gateway, with fallback.</p></div>
+      <div class="step reveal"><div class="step__n">03</div><h3>Ground</h3><p>Retrieval over embeddings and a knowledge graph injects the right context with RAG and Graph RAG.</p></div>
+      <div class="step reveal"><div class="step__n">04</div><h3>Guard and evaluate</h3><p>Guardrails check every input and output; evaluation scores quality continuously.</p></div>
+      <div class="step reveal"><div class="step__n">05</div><h3>Trace</h3><p>End-to-end tracing and monitoring make each run observable and debuggable.</p></div>
+    </div>
+  </section>
+
+  <section class="wrap section">
+    <h2 class="heading-lg reveal">A look at the platform.</h2>
+    <div class="gallery reveal" data-gallery aria-roledescription="carousel" aria-label="Nawras AI Platform gallery">
+      <div class="gallery__viewport">
+        <div class="gallery__track">
+          <figure class="slide"><div class="slide__art art--flow"><span class="slide__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-flow"/></svg></span></div>
+            <figcaption class="slide__cap"><b>Workflow builder</b><span>Compose and branch multi-step agent flows.</span></figcaption></figure>
+          <figure class="slide"><div class="slide__art art--graph"><span class="slide__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-layers"/></svg></span></div>
+            <figcaption class="slide__cap"><b>RAG and Graph RAG</b><span>Grounding over vectors and a knowledge graph.</span></figcaption></figure>
+          <figure class="slide"><div class="slide__art art--metrics"><span class="slide__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-pulse"/></svg></span></div>
+            <figcaption class="slide__cap"><b>Eval and tracing</b><span>Continuous scoring with end-to-end observability.</span></figcaption></figure>
+        </div>
+      </div>
+      <div class="gallery__ctrl">
+        <button class="g-btn g-prev" type="button" aria-label="Previous image">&lsaquo;</button>
+        <div class="gallery__dots"></div>
+        <button class="g-btn g-next" type="button" aria-label="Next image">&rsaquo;</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap section">
+    <h2 class="heading-lg reveal">Outcome.</h2>
+    <div class="outcome">
+      <div class="metric reveal"><b>In production</b><span>Running inside the company AI engine</span></div>
+      <div class="metric reveal"><b>Reusable core</b><span>Foundation for X10 and the BI Agent</span></div>
+    </div>
+  </section>
+
+  <section class="wrap endcta">
+    <h2 class="reveal">Build AI that <span class="hl">acts.</span></h2>
+    <div class="endcta__row reveal">
+      <a class="btn btn-primary" data-magnetic="0.3" href="./index.html#contact">Get in touch <span class="arw">&rarr;</span></a>
+      <a class="btn btn-ghost" data-magnetic="0.2" href="./resume.html" target="_blank" rel="noopener">Résumé</a>
+    </div>
+    <div class="wrap morenav reveal" style="margin-top:48px">
+      <a class="morelink" href="./index.html#work"><span>Back</span><b>All work</b></a>
+      <a class="morelink next" href="./x10.html"><span>Next project</span><b>X10 &rarr;</b></a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <span>© <span id="yr"></span> Hamza Salman</span>
+    <span>Riyadh, Saudi Arabia</span>
+    <a href="#main">Back to top ↑</a>
+  </div>
+</footer>
+
+<script>document.getElementById("yr").textContent=new Date().getFullYear();</script>
+<script src="./project.js" defer></script>
+</body>
+</html>

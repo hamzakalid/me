@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script>(function(){try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<title>BI Agent - Case study | Hamza Salman</title>
+<meta name="description" content="Case study: BI Agent, conversational analytics that turns natural language into accurate, explainable T-SQL with a semantic layer and knowledge graph." />
+<meta name="author" content="Hamza Salman" />
+<meta name="color-scheme" content="light dark" />
+<meta name="theme-color" id="metaTheme" content="#EEF1F6" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='8'%20fill='%230B1220'/%3E%3Ctext%20x='16'%20y='21'%20font-family='monospace'%20font-size='13'%20font-weight='700'%20fill='%23fff'%20text-anchor='middle'%3EHS%3C/text%3E%3C/svg%3E" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="BI Agent - Case study" />
+<meta property="og:description" content="Conversational analytics that turns plain-English questions into accurate, explainable T-SQL over enterprise data." />
+<meta property="og:url" content="https://hamzakalid.github.io/me/bi-agent.html" />
+<meta property="og:image" content="https://hamzakalid.github.io/me/og-image.svg" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./project.css" />
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="ico-flow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.3"/><circle cx="5" cy="18" r="2.3"/><circle cx="19" cy="12" r="2.3"/><path d="m7.2 7 9.6 4M7.2 17l9.6-4"/></symbol>
+  <symbol id="ico-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 21 8l-9 5-9-5z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/></symbol>
+  <symbol id="ico-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2.5-7 4 14 2.5-7H21"/></symbol>
+  <symbol id="ico-graph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="7" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="17" r="2"/><path d="m7.8 8.2 8 8.6M8 7l8-.8M7 15V9M16.4 7.5 17 16"/></symbol>
+  <symbol id="ico-loop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 13.6-5.7M18 3.5V8h-4.5"/><path d="M20 12a8 8 0 0 1-13.6 5.7M6 20.5V16h4.5"/></symbol>
+  <symbol id="ico-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 8l-4 4 4 4M15 8l4 4-4 4"/></symbol>
+  <symbol id="ico-sql" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="2.6"/><path d="M5 6v6c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6M5 12v6c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6v-6"/></symbol>
+  <symbol id="ico-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M6 20v-6M11 20V8M16 20v-9"/></symbol>
+</svg>
+
+<div class="progress" id="progress"></div>
+<div class="bg" id="bg" aria-hidden="true"><canvas></canvas></div>
+
+<button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark theme">
+  <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.6M12 18.9v2.6M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M2.5 12h2.6M18.9 12h2.6M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"/></svg>
+</button>
+
+<nav class="nav">
+  <div class="nav__in">
+    <a class="back" href="./index.html"><b>HS</b><span>Hamza Salman</span></a>
+    <div class="nav__r">
+      <a href="./index.html#work">Work</a>
+      <a href="./resume.html" target="_blank" rel="noopener">Résumé</a>
+      <a href="./index.html#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<main class="shell" id="main">
+
+  <header class="wrap phero">
+    <div class="eyebrow reveal">Case study</div>
+    <h1 class="ptitle reveal">BI Agent</h1>
+    <p class="plede reveal">Conversational analytics that turns plain-English questions into accurate, explainable T-SQL over enterprise data.</p>
+    <div class="phero__meta reveal">
+      <span><b>Role</b> AI Developer &amp; Automation Engineer</span>
+      <span><b>Org</b> Al-Obeikan Digital Solutions</span>
+      <span><b>Domain</b> Analytics</span>
+    </div>
+    <div class="phero__cta reveal">
+      <a class="btn btn-primary" data-magnetic="0.3" href="./index.html#contact">Get in touch <span class="arw">&rarr;</span></a>
+      <a class="btn btn-ghost" data-magnetic="0.2" href="./index.html#work">All work <span class="arw">&rarr;</span></a>
+    </div>
+  </header>
+
+  <div class="wrap reveal">
+    <div class="banner"><span class="banner__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-sql"/></svg></span></div>
+  </div>
+
+  <section class="wrap section">
+    <div class="two-col">
+      <p class="lead reveal">The fastest query is the one you can ask in your own words.</p>
+      <div>
+        <p class="prose reveal">The BI Agent turns natural-language questions into T-SQL over enterprise databases. A semantic layer and a knowledge graph map business terms to data models, so answers are accurate and explainable rather than plausible guesses.</p>
+        <p class="prose reveal">Results do not stop at a raw table. They render through an integrated dashboard builder that turns a single question into an interactive, decision-ready view.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap section">
+    <div class="eyebrow reveal">Capabilities</div>
+    <h2 class="heading-lg reveal">From a question to a decision.</h2>
+    <div class="caps">
+      <article class="cap cap--feature reveal">
+        <svg class="cap__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-sql"/></svg>
+        <h3>Natural language to T-SQL</h3>
+        <p>Ask in plain English; the agent writes accurate T-SQL over enterprise databases.</p>
+      </article>
+      <article class="cap cap--wide reveal">
+        <svg class="cap__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-layers"/></svg>
+        <h3>Semantic layer</h3>
+        <p>Business terms mapped to the underlying data models.</p>
+      </article>
+      <article class="cap cap--wide reveal">
+        <svg class="cap__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-graph"/></svg>
+        <h3>Knowledge graph</h3>
+        <p>Relationships between entities that make answers explainable.</p>
+      </article>
+      <article class="cap reveal">
+        <svg class="cap__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-chart"/></svg>
+        <h3>Dashboard builder</h3>
+        <p>Turns query results into interactive, decision-ready views.</p>
+      </article>
+      <article class="cap reveal">
+        <svg class="cap__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-pulse"/></svg>
+        <h3>Explainable answers</h3>
+        <p>Every result traces back to the terms and tables it used.</p>
+      </article>
+      <article class="cap reveal">
+        <svg class="cap__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-code"/></svg>
+        <h3>Enterprise data</h3>
+        <p>Runs against real production databases, not samples.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap section">
+    <h2 class="heading-lg reveal">How a question becomes a view.</h2>
+    <div class="steps">
+      <div class="step reveal"><div class="step__n">01</div><h3>Ask</h3><p>A user asks a question in plain English.</p></div>
+      <div class="step reveal"><div class="step__n">02</div><h3>Map</h3><p>The semantic layer and knowledge graph resolve business terms to data models.</p></div>
+      <div class="step reveal"><div class="step__n">03</div><h3>Query</h3><p>The agent generates and runs accurate T-SQL.</p></div>
+      <div class="step reveal"><div class="step__n">04</div><h3>Explain</h3><p>The answer carries the terms and tables it relied on.</p></div>
+      <div class="step reveal"><div class="step__n">05</div><h3>Visualize</h3><p>The dashboard builder renders an interactive, decision-ready view.</p></div>
+    </div>
+  </section>
+
+  <section class="wrap section">
+    <h2 class="heading-lg reveal">A look at the agent.</h2>
+    <div class="gallery reveal" data-gallery aria-roledescription="carousel" aria-label="BI Agent gallery">
+      <div class="gallery__viewport">
+        <div class="gallery__track">
+          <figure class="slide"><div class="slide__art art--graph"><span class="slide__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-sql"/></svg></span></div>
+            <figcaption class="slide__cap"><b>Ask in plain English</b><span>Natural language turned into accurate T-SQL.</span></figcaption></figure>
+          <figure class="slide"><div class="slide__art art--loop"><span class="slide__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-graph"/></svg></span></div>
+            <figcaption class="slide__cap"><b>Semantic layer and graph</b><span>Business terms mapped to data, explainably.</span></figcaption></figure>
+          <figure class="slide"><div class="slide__art art--metrics"><span class="slide__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-chart"/></svg></span></div>
+            <figcaption class="slide__cap"><b>Dashboard builder</b><span>Interactive, decision-ready views from a question.</span></figcaption></figure>
+        </div>
+      </div>
+      <div class="gallery__ctrl">
+        <button class="g-btn g-prev" type="button" aria-label="Previous image">&lsaquo;</button>
+        <div class="gallery__dots"></div>
+        <button class="g-btn g-next" type="button" aria-label="Next image">&rsaquo;</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap section">
+    <h2 class="heading-lg reveal">Outcome.</h2>
+    <div class="outcome">
+      <div class="metric reveal"><b>Explainable</b><span>Answers trace back to terms and tables</span></div>
+      <div class="metric reveal"><b>Decision-ready</b><span>Interactive dashboards built from a question</span></div>
+    </div>
+  </section>
+
+  <section class="wrap endcta">
+    <h2 class="reveal">Build AI that <span class="hl">acts.</span></h2>
+    <div class="endcta__row reveal">
+      <a class="btn btn-primary" data-magnetic="0.3" href="./index.html#contact">Get in touch <span class="arw">&rarr;</span></a>
+      <a class="btn btn-ghost" data-magnetic="0.2" href="./resume.html" target="_blank" rel="noopener">Résumé</a>
+    </div>
+    <div class="wrap morenav reveal" style="margin-top:48px">
+      <a class="morelink" href="./x10.html"><span>Previous project</span><b>&larr; X10</b></a>
+      <a class="morelink next" href="./index.html#work"><span>Back</span><b>All work &rarr;</b></a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <span>© <span id="yr"></span> Hamza Salman</span>
+    <span>Riyadh, Saudi Arabia</span>
+    <a href="#main">Back to top ↑</a>
+  </div>
+</footer>
+
+<script>document.getElementById("yr").textContent=new Date().getFullYear();</script>
+<script src="./project.js" defer></script>
+</body>
+</html>
