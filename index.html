@@ -302,16 +302,16 @@
   @keyframes letUp{to{opacity:1;transform:none}}
 
   /* ---------- reveal ---------- */
-  .reveal{opacity:0;transform:translateY(30px);
-    transition:opacity .85s ease,transform .85s cubic-bezier(.2,.7,.2,1)}
-  .reveal.in{opacity:1;transform:none}
+  .reveal{opacity:0;transform:translate3d(0,34px,0);filter:blur(8px);
+    transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1),filter .8s cubic-bezier(.16,1,.3,1)}
+  .reveal.in{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}
 
   /* ---------- about ---------- */
   .about__grid{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(32px,5vw,76px);align-items:start}
   .stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);
     border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-top:8px}
   .stat{background:var(--frost);padding:22px 22px;transition:background .45s ease}
-  .stat b{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:clamp(1.7rem,3.4vw,2.5rem);
+  .stat b{font-family:"Space Grotesk",sans-serif;font-weight:600;font-variant-numeric:tabular-nums;font-size:clamp(1.7rem,3.4vw,2.5rem);
     letter-spacing:-.02em;display:block;color:var(--ink)}
   .stat span{font-family:"JetBrains Mono",monospace;font-size:.7rem;letter-spacing:.12em;
     text-transform:uppercase;color:var(--slate-2);margin-top:6px;display:block}
@@ -352,13 +352,17 @@
 
   /* ---------- path / timeline ---------- */
   .tl{position:relative;margin-top:50px;padding-left:30px}
-  .tl::before{content:"";position:absolute;left:5px;top:8px;bottom:8px;width:1px;
-    background:linear-gradient(var(--line),rgba(39,64,230,.45),var(--line))}
+  .tl::before{content:"";position:absolute;left:5px;top:8px;bottom:8px;width:1px;background:var(--line)}
+  .tl-progress{position:absolute;left:5px;top:8px;width:1px;height:calc(100% - 16px);
+    transform-origin:top center;transform:scaleY(0);
+    background:linear-gradient(var(--cobalt),#5a72ff);box-shadow:0 0 12px rgba(39,64,230,.5)}
   .tl-item{position:relative;padding-bottom:clamp(30px,4.4vw,52px)}
   .tl-item:last-child{padding-bottom:0}
   .tl-item::before{content:"";position:absolute;left:-30px;top:7px;width:11px;height:11px;
-    border-radius:50%;background:var(--frost);border:2px solid var(--cobalt);
-    box-shadow:0 0 0 4px rgba(39,64,230,.12)}
+    border-radius:50%;background:var(--frost);border:2px solid var(--line);box-shadow:0 0 0 4px transparent;
+    transition:border-color .45s ease,background .45s ease,box-shadow .45s ease}
+  .tl-item.active::before{background:var(--cobalt);border-color:var(--cobalt);
+    box-shadow:0 0 0 4px rgba(39,64,230,.16)}
   .tl-when{font-family:"JetBrains Mono",monospace;font-size:.74rem;letter-spacing:.1em;
     text-transform:uppercase;color:var(--cobalt-ink)}
   .tl-role{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:clamp(1.18rem,2.2vw,1.5rem);
@@ -429,7 +433,7 @@
   @media (prefers-reduced-motion:reduce){
     html{scroll-behavior:auto}
     *{animation:none!important;transition:none!important}
-    .li,.letter,.reveal{opacity:1!important;transform:none!important}
+    .li,.letter,.reveal{opacity:1!important;transform:none!important;filter:none!important}
     .cue{display:none}
   }
 </style>
@@ -565,7 +569,7 @@
       <div class="works">
 
         <article class="proj reveal">
-          <div class="proj__num">01</div>
+          <div class="proj__num" data-parallax="-48">01</div>
           <div>
             <h3 class="proj__t">Nawras AI Platform</h3>
             <div class="proj__d">Enterprise platform for automation &amp; agentic AI</div>
@@ -579,7 +583,7 @@
         </article>
 
         <article class="proj reveal">
-          <div class="proj__num">02</div>
+          <div class="proj__num" data-parallax="52">02</div>
           <div>
             <h3 class="proj__t">X10</h3>
             <div class="proj__d">Agentic AI for the Nawras ERP</div>
@@ -593,7 +597,7 @@
         </article>
 
         <article class="proj reveal">
-          <div class="proj__num">03</div>
+          <div class="proj__num" data-parallax="-48">03</div>
           <div>
             <h3 class="proj__t">BI Agent</h3>
             <div class="proj__d">Conversational analytics over enterprise data</div>
@@ -615,6 +619,7 @@
       <div class="eyebrow reveal">04 — Path</div>
       <h2 class="head reveal" id="path-h">From full-stack to autonomous systems.</h2>
       <div class="tl">
+        <span class="tl-progress" aria-hidden="true"></span>
         <div class="tl-item reveal">
           <div class="tl-when">Jan 2023 — Present</div>
           <h3 class="tl-role">AI Developer &amp; Automation Engineer</h3>
@@ -926,31 +931,110 @@
     sections.forEach(function(s){ io.observe(s); });
   }
 
-  /* ---- scroll-driven: progress, nav, hero parallax ---- */
+  /* ---- count-up for the stats (draws the eye to the credentials) ---- */
+  function counters(){
+    var nums = Array.prototype.slice.call(document.querySelectorAll(".stat b"));
+    if(!nums.length || RM || !("IntersectionObserver" in window)) return;
+    function run(el){
+      var raw = el.getAttribute("data-val");
+      var m = raw.match(/^(\d+(?:\.\d+)?)(.*)$/);
+      if(!m){ el.textContent = raw; return; }
+      var target = parseFloat(m[1]);
+      var dec = (m[1].split(".")[1] || "").length;
+      var suffix = m[2] || "";
+      var dur = 1100, t0 = null;
+      function step(ts){
+        if(t0 === null) t0 = ts;
+        var p = Math.min(1, (ts - t0) / dur);
+        var val = target * (1 - Math.pow(1 - p, 3));   // easeOutCubic
+        el.textContent = val.toFixed(dec) + suffix;
+        if(p < 1) requestAnimationFrame(step); else el.textContent = raw;
+      }
+      requestAnimationFrame(step);
+    }
+    nums.forEach(function(el){
+      var raw = el.textContent.trim();
+      el.setAttribute("data-val", raw);
+      var m = raw.match(/^(\d+(?:\.\d+)?)(.*)$/);
+      if(m){ el.textContent = (0).toFixed((m[1].split(".")[1] || "").length) + (m[2] || ""); }
+    });
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ run(e.target); io.unobserve(e.target); } });
+    }, { threshold:0.6 });
+    nums.forEach(function(el){ io.observe(el); });
+  }
+
+  /* ---- scroll-driven: progress, nav, hero parallax, content parallax, timeline draw ---- */
   function scrollFx(){
     var progress = document.getElementById("progress");
     var nav = document.getElementById("nav");
     var heroIn = document.getElementById("heroIn");
+    var parallaxEls = Array.prototype.slice.call(document.querySelectorAll("[data-parallax]"));
+    var tl = document.querySelector(".tl");
+    var tlLine = document.querySelector(".tl-progress");
+    var tlItems = Array.prototype.slice.call(document.querySelectorAll(".tl-item"));
     var ticking = false;
+    var measures = [], tlTop = 0, tlH = 1, itemTops = [];
+
+    function measure(){
+      var sy = window.pageYOffset || document.documentElement.scrollTop || 0;
+      measures = parallaxEls.map(function(el){
+        var r = el.getBoundingClientRect();
+        return { el: el, top: r.top + sy, h: r.height, amt: parseFloat(el.getAttribute("data-parallax")) || 0 };
+      });
+      if(tl){
+        var tr = tl.getBoundingClientRect();
+        tlTop = tr.top + sy; tlH = tr.height || 1;
+        itemTops = tlItems.map(function(it){ return it.getBoundingClientRect().top + sy; });
+      }
+    }
 
     function update(){
-      var y = window.pageYOffset || document.documentElement.scrollTop;
+      var y = window.pageYOffset || document.documentElement.scrollTop || 0;
       var vh = window.innerHeight;
       var docH = document.documentElement.scrollHeight - vh;
-      progress.style.width = (docH>0 ? (y/docH*100) : 0) + "%";
+      progress.style.width = (docH > 0 ? (y / docH * 100) : 0) + "%";
+      if(y > vh * 0.66) nav.classList.add("show"); else nav.classList.remove("show");
 
-      if(y > vh*0.66) nav.classList.add("show"); else nav.classList.remove("show");
-
-      if(!RM && y < vh){
-        var p = y / vh;
-        heroIn.style.transform = "translateY("+(y*0.26)+"px)";
-        heroIn.style.opacity = Math.max(0, 1 - p*1.15);
+      if(!RM){
+        if(y < vh){
+          var p = y / vh;
+          heroIn.style.transform = "translateY(" + (y * 0.26) + "px)";
+          heroIn.style.opacity = Math.max(0, 1 - p * 1.15);
+        }
+        // content parallax (transform-only, computed from cached base positions, no feedback)
+        for(var i = 0; i < measures.length; i++){
+          var m = measures[i];
+          var ratio = (m.top + m.h / 2 - y) / vh;          // 0 = viewport top, 1 = bottom
+          ratio = ratio < 0 ? 0 : ratio > 1 ? 1 : ratio;
+          m.el.style.transform = "translate3d(0," + ((0.5 - ratio) * m.amt).toFixed(2) + "px,0)";
+        }
+        // timeline draw-on-scroll + node activation
+        if(tl && tlLine){
+          var trigger = vh * 0.6;
+          var prog = (y + trigger - tlTop) / tlH;
+          prog = prog < 0 ? 0 : prog > 1 ? 1 : prog;
+          tlLine.style.transform = "scaleY(" + prog.toFixed(4) + ")";
+          for(var k = 0; k < tlItems.length; k++){
+            if(itemTops[k] - y < trigger) tlItems[k].classList.add("active");
+            else tlItems[k].classList.remove("active");
+          }
+        }
       }
       ticking = false;
     }
     function onScroll(){ if(!ticking){ ticking = true; requestAnimationFrame(update); } }
+
+    if(RM){
+      // reduced motion: show the path fully drawn with all nodes active, no scrubbing
+      if(tlLine) tlLine.style.transform = "scaleY(1)";
+      tlItems.forEach(function(it){ it.classList.add("active"); });
+    } else {
+      measure();
+      window.addEventListener("load", function(){ measure(); update(); });
+    }
     window.addEventListener("scroll", onScroll, { passive:true });
-    window.addEventListener("resize", update);
+    window.addEventListener("resize", function(){ if(!RM){ measure(); } update(); });
     update();
   }
 
@@ -959,6 +1043,7 @@
   buildBackground();
   splitName();
   reveals();
+  counters();
   navSpy();
   scrollFx();
 })();
