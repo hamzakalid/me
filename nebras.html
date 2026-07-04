@@ -4,16 +4,16 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <script>(function(){try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
-<title>X10 - Case study | Hamza Salman</title>
-<meta name="description" content="Case study: X10, an agentic AI for the Nawras ERP that understands enterprise data through ontology and semantic layers, then acts on it." />
+<title>Nebras - Case study | Hamza Salman</title>
+<meta name="description" content="Case study: Nebras, an agentic AI for the Nawras ERP that understands enterprise data through ontology and semantic layers, then acts on it." />
 <meta name="author" content="Hamza Salman" />
 <meta name="color-scheme" content="light dark" />
 <meta name="theme-color" id="metaTheme" content="#EEF1F6" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='8'%20fill='%230B1220'/%3E%3Ctext%20x='16'%20y='21'%20font-family='monospace'%20font-size='13'%20font-weight='700'%20fill='%23fff'%20text-anchor='middle'%3EHS%3C/text%3E%3C/svg%3E" />
 <meta property="og:type" content="article" />
-<meta property="og:title" content="X10 - Case study" />
+<meta property="og:title" content="Nebras - Case study" />
 <meta property="og:description" content="An ERP-connected agent that understands enterprise data through ontology and semantic layers, then acts on it." />
-<meta property="og:url" content="https://hamzakalid.github.io/me/x10.html" />
+<meta property="og:url" content="https://hamzakalid.github.io/me/nebras.html" />
 <meta property="og:image" content="https://hamzakalid.github.io/me/og-image.svg" />
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -59,7 +59,7 @@
 
   <header class="wrap phero">
     <div class="eyebrow reveal">Case study</div>
-    <h1 class="ptitle reveal">X10</h1>
+    <h1 class="ptitle reveal">Nebras</h1>
     <p class="plede reveal">An ERP-connected agent that understands enterprise data through ontology and semantic layers, then acts on it.</p>
     <div class="phero__meta reveal">
       <span><b>Role</b> AI Developer &amp; Automation Engineer</span>
@@ -73,14 +73,25 @@
   </header>
 
   <div class="wrap reveal">
-    <div class="banner"><span class="banner__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-loop"/></svg></span></div>
+    <div class="compare" data-compare style="--pos:50%" aria-label="Nebras chat — the same conversation in light and dark themes">
+      <img class="compare__base" src="./assets/Nebras/nebras-chat.dark.png" alt="Nebras chat interface, dark theme" />
+      <div class="compare__top"><img src="./assets/Nebras/nebras-chat.light.png" alt="Nebras chat interface, light theme" /></div>
+      <div class="compare__divider" aria-hidden="true"></div>
+      <button class="compare__handle" type="button" role="slider"
+              aria-label="Drag to reveal light and dark themes"
+              aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-orientation="horizontal" tabindex="0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6 4 12l5 6M15 6l5 6-5 6"/></svg>
+      </button>
+      <span class="compare__tag compare__tag--l">Light</span>
+      <span class="compare__tag compare__tag--r">Dark</span>
+    </div>
   </div>
 
   <section class="wrap section">
     <div class="two-col">
       <p class="lead reveal">An agent is only as good as its understanding of the data underneath it.</p>
       <div>
-        <p class="prose reveal">X10 is the agent layer for the Nawras ERP. It is built on ontology and semantic layers, so it reasons about enterprise entities and relationships rather than raw table names. On top of that understanding it runs an agent loop and a tool loop, with a skills system that decomposes hard tasks into sharper steps.</p>
+        <p class="prose reveal">Nebras is the agent layer for the Nawras ERP. It is built on ontology and semantic layers, so it reasons about enterprise entities and relationships rather than raw table names. On top of that understanding it runs an agent loop and a tool loop, with a skills system that decomposes hard tasks into sharper steps.</p>
         <p class="prose reveal">A built-in Python sandbox lets it analyze data with code, read uploaded files and images, and generate files for users. Guardrails and MCP connectivity keep it safe and connected to the tools it needs.</p>
       </div>
     </div>
@@ -135,16 +146,20 @@
   </section>
 
   <section class="wrap section">
-    <h2 class="heading-lg reveal">A look at the agent.</h2>
-    <div class="gallery reveal" data-gallery aria-roledescription="carousel" aria-label="X10 gallery">
+    <h2 class="heading-lg reveal">A look inside Nebras.</h2>
+    <div class="gallery reveal" data-gallery aria-roledescription="carousel" aria-label="Nebras gallery">
       <div class="gallery__viewport">
         <div class="gallery__track">
-          <figure class="slide"><div class="slide__art art--loop"><span class="slide__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-graph"/></svg></span></div>
-            <figcaption class="slide__cap"><b>Ontology layer</b><span>Entities and relationships the agent reasons over.</span></figcaption></figure>
-          <figure class="slide"><div class="slide__art art--flow"><span class="slide__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-loop"/></svg></span></div>
-            <figcaption class="slide__cap"><b>Agent and tool loop</b><span>Plan, call tools, observe, iterate.</span></figcaption></figure>
-          <figure class="slide"><div class="slide__art art--code"><span class="slide__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-code"/></svg></span></div>
-            <figcaption class="slide__cap"><b>Python sandbox</b><span>Analyze data with code, read files, generate outputs.</span></figcaption></figure>
+          <figure class="slide"><div class="slide__art slide__art--img"><img src="./assets/Nebras/dashboard.png" alt="Nebras dashboard" loading="lazy" /></div>
+            <figcaption class="slide__cap"><b>Dashboard</b><span>The agent's home — activity, entry points, and status at a glance.</span></figcaption></figure>
+          <figure class="slide"><div class="slide__art slide__art--img"><img src="./assets/Nebras/agent.settings.png" alt="Nebras agent settings" loading="lazy" /></div>
+            <figcaption class="slide__cap"><b>Agent settings</b><span>Configure the agent's behaviour, model, and guardrails.</span></figcaption></figure>
+          <figure class="slide"><div class="slide__art slide__art--img"><img src="./assets/Nebras/skills.png" alt="Nebras skills" loading="lazy" /></div>
+            <figcaption class="slide__cap"><b>Skills</b><span>Reusable skills that decompose hard tasks into sharper steps.</span></figcaption></figure>
+          <figure class="slide"><div class="slide__art slide__art--img"><img src="./assets/Nebras/mcp.servers.png" alt="Nebras MCP servers" loading="lazy" /></div>
+            <figcaption class="slide__cap"><b>MCP servers</b><span>Model Context Protocol connections to external tools and data.</span></figcaption></figure>
+          <figure class="slide"><div class="slide__art slide__art--img"><img src="./assets/Nebras/tracing-dashboard.png" alt="Nebras tracing dashboard" loading="lazy" /></div>
+            <figcaption class="slide__cap"><b>Tracing dashboard</b><span>Every run traced end to end for observability and debugging.</span></figcaption></figure>
         </div>
       </div>
       <div class="gallery__ctrl">

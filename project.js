@@ -1,6 +1,6 @@
 /* project.js — shared behaviour for the case-study pages.
    Theme toggle, canvas neural background, scroll reveals, image carousel,
-   scroll progress, magnetic buttons. All reduced-motion-safe. */
+   light/dark compare slider, scroll progress, magnetic buttons. All reduced-motion-safe. */
 (function(){
   "use strict";
   var RM = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -173,5 +173,34 @@
     });
   }
 
-  theme(); buildBackground(); reveals(); scrollProgress(); magnetic(); carousel();
+  /* light/dark image comparison slider — drag the divider (starts centered) to
+     reveal the light theme on one side and the dark theme on the other. */
+  function compare(){
+    Array.prototype.slice.call(document.querySelectorAll("[data-compare]")).forEach(function(c){
+      var handle = c.querySelector(".compare__handle"); if(!handle) return;
+      var dragging = false;
+      function set(pct){ pct = pct < 0 ? 0 : pct > 100 ? 100 : pct;
+        c.style.setProperty("--pos", pct.toFixed(2) + "%"); handle.setAttribute("aria-valuenow", Math.round(pct)); }
+      function at(e){ var r = c.getBoundingClientRect(); if(r.width) set((e.clientX - r.left) / r.width * 100); }
+      c.addEventListener("pointerdown", function(e){
+        dragging = true; try { c.setPointerCapture(e.pointerId); } catch(_){}
+        at(e); handle.focus(); e.preventDefault();
+      });
+      c.addEventListener("pointermove", function(e){ if(dragging) at(e); });
+      function end(){ dragging = false; }
+      c.addEventListener("pointerup", end);
+      c.addEventListener("pointercancel", end);
+      handle.addEventListener("keydown", function(e){
+        var cur = parseFloat(c.style.getPropertyValue("--pos")) || 50, step = e.shiftKey ? 10 : 2, k = e.key;
+        if(k === "ArrowLeft" || k === "ArrowDown") set(cur - step);
+        else if(k === "ArrowRight" || k === "ArrowUp") set(cur + step);
+        else if(k === "Home") set(0);
+        else if(k === "End") set(100);
+        else return;
+        e.preventDefault();
+      });
+    });
+  }
+
+  theme(); buildBackground(); reveals(); scrollProgress(); magnetic(); carousel(); compare();
 })();
