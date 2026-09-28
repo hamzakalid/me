@@ -20,7 +20,6 @@
   --btn-primary-shadow:0 12px 30px -14px rgba(11,18,32,.6),inset 0 1px 0 rgba(255,255,255,.08);
   --btn-primary-shadow-h:0 20px 44px -16px rgba(11,18,32,.6),inset 0 1px 0 rgba(255,255,255,.12);
   --mark-bg:#0B1220; --mark-fg:#ffffff;
-  --name-grad-2:#39435e;
   --scrim:rgba(238,241,246,.55);
   --maxw:1080px; --gut:clamp(20px,5vw,72px); --r:18px;
 }
@@ -40,7 +39,6 @@
   --btn-primary-shadow:0 12px 30px -16px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.7);
   --btn-primary-shadow-h:0 20px 46px -18px rgba(0,0,0,.75),inset 0 1px 0 rgba(255,255,255,.8);
   --mark-bg:#EAF0FA; --mark-fg:#0B0F1A;
-  --name-grad-2:#7f8cae;
   --scrim:rgba(10,14,25,.62);
 }
 
@@ -54,6 +52,8 @@ body{
   transition:background-color .45s ease,color .45s ease;
 }
 ::selection{background:rgba(39,64,230,.18);color:var(--ink)}
+html{scrollbar-color:rgba(85,97,123,.45) transparent;accent-color:var(--cobalt);caret-color:var(--cobalt)}
+[data-theme="dark"]{scrollbar-color:rgba(155,168,194,.35) transparent}
 a{color:inherit;text-decoration:none}
 svg{display:block}
 :where(a,button,[tabindex]):focus-visible{outline:2px solid var(--cobalt);outline-offset:3px;border-radius:8px}
@@ -63,11 +63,18 @@ svg{display:block}
   padding:11px 16px;border-radius:11px;transition:transform .3s cubic-bezier(.2,.7,.2,1)}
 .skip:focus{transform:none}
 
-/* living background (canvas) */
-.bg{position:fixed;inset:0;z-index:0;pointer-events:none}
-.bg canvas{position:absolute;inset:0;display:block;width:100%;height:100%}
-.bg::after{content:"";position:absolute;inset:0;
-  background:radial-gradient(115% 75% at 50% 30%, transparent 44%, var(--scrim))}
+/* cinematic 3D world (assets/js/world.js + scenes/<page>.js) */
+#scene3d{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block;
+  transition:opacity .6s ease}
+.no3d #scene3d{display:none}
+/* keeps copy legible over the scene: text lives on the left, the world on the right */
+.scrim{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(90deg,
+    color-mix(in srgb,var(--frost) 82%,transparent) 0%,
+    color-mix(in srgb,var(--frost) 50%,transparent) 36%,
+    transparent 64%)}
+.no3d .scrim{display:none}
+@media(max-width:760px){.scrim{background:color-mix(in srgb,var(--frost) 55%,transparent)}}
 
 .progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:60;
   background:linear-gradient(90deg,var(--cobalt),#5a72ff)}
@@ -118,10 +125,7 @@ svg{display:block}
 .theme-toggle .i-sun{display:none}.theme-toggle .i-moon{display:block}
 [data-theme="dark"] .theme-toggle .i-sun{display:block}[data-theme="dark"] .theme-toggle .i-moon{display:none}
 
-/* eyebrow + headings */
-.eyebrow{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:.72rem;letter-spacing:.24em;
-  text-transform:uppercase;color:var(--cobalt-ink);display:inline-flex;align-items:center;gap:14px}
-.eyebrow::before{content:"";width:30px;height:1px;background:var(--cobalt);opacity:.7}
+/* headings */
 h1,h2,h3{font-family:"Space Grotesk",sans-serif;letter-spacing:-.025em;line-height:1.05}
 
 /* hero */
@@ -129,9 +133,12 @@ h1,h2,h3{font-family:"Space Grotesk",sans-serif;letter-spacing:-.025em;line-heig
 .phero__meta{display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:26px;
   font-family:"JetBrains Mono",monospace;font-size:.74rem;color:var(--slate-2)}
 .phero__meta b{color:var(--slate);font-weight:500}
-.ptitle{font-weight:700;font-size:clamp(2.6rem,8vw,5.2rem);line-height:.96;margin-top:18px;
-  background-image:linear-gradient(115deg,var(--ink),var(--name-grad-2));
-  -webkit-background-clip:text;background-clip:text;color:transparent;max-width:14ch}
+.ptitle{font-weight:700;font-size:clamp(2.6rem,8vw,5.2rem);line-height:.96;letter-spacing:-.035em;
+  color:var(--ink);max-width:14ch;perspective:900px}
+.ptitle .word{display:inline-block;transform-style:preserve-3d}
+.ptitle .lw{display:inline-block;will-change:transform;
+  transform:translate3d(calc(var(--dx) * var(--sp,0) * 1px),calc(var(--dy) * var(--sp,0) * 1px),calc(var(--dz) * var(--sp,0) * 1px))
+    rotateX(calc(var(--rx) * var(--sp,0) * 1deg)) rotateY(calc(var(--ry) * var(--sp,0) * 1deg))}
 .plede{color:var(--slate);font-size:clamp(1.1rem,1.8vw,1.35rem);line-height:1.6;max-width:54ch;margin-top:22px}
 .phero__cta{display:flex;flex-wrap:wrap;gap:13px;margin-top:32px}
 
@@ -274,13 +281,32 @@ footer{border-top:1px solid var(--line-soft);margin-top:clamp(40px,7vh,90px)}
   font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--slate-2)}
 .foot a{color:var(--slate-2);transition:color .3s}.foot a:hover{color:var(--cobalt-ink)}
 
-/* reveal */
-.reveal{opacity:0;transform:translate3d(0,30px,0);filter:blur(8px);
+/* reveal (hidden only once JS is known to run) */
+.js .reveal{opacity:0;transform:translate3d(0,30px,0);filter:blur(8px);
   transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1),filter .8s cubic-bezier(.16,1,.3,1)}
 .reveal.in{opacity:1;transform:none;filter:blur(0)}
+
+/* headings arrive word by word from behind a mask */
+.js .split.reveal{opacity:1;transform:none;filter:none}
+.split .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.1em;margin-bottom:-.1em}
+.split .wi{display:inline-block;transform:translate3d(0,108%,0) rotate(5deg);transform-origin:0 100%;
+  transition:transform 1s cubic-bezier(.16,1,.3,1);transition-delay:calc(var(--i) * 55ms)}
+.split.in .wi{transform:none}
+
+/* each section is a stop on the camera's route: short ones get room for the camera to arrive */
+.has3d #overview,.has3d #outcome{min-height:72svh;display:flex;flex-direction:column;justify-content:center}
+
+/* desktop with the 3D world: content keeps a left column, the world owns the right */
+@media(min-width:1000px){
+  .has3d .shell>.wrap{width:min(720px,60%);margin-left:max(var(--gut),calc((100% - var(--maxw)) / 2));margin-right:auto}
+  .has3d .banner{display:none} /* the hero formation is the visual */
+  .has3d .endcta{text-align:left}
+  .has3d .endcta__row{justify-content:flex-start}
+  .has3d .endcta .morenav{width:100%}
+}
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *{animation:none!important;transition:none!important}
-  .reveal{opacity:1!important;transform:none!important;filter:none!important}
+  .reveal,.wi,.lw{opacity:1!important;transform:none!important;filter:none!important}
 }
