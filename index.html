@@ -8,6 +8,7 @@
 <script>
 (function(){try{
   document.documentElement.classList.add("js");
+  if(window.WebGLRenderingContext) document.documentElement.classList.add("will3d");
   var t = localStorage.getItem("theme");
   if(t!=="light" && t!=="dark"){
     t = (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
@@ -175,9 +176,10 @@
   /* ---------- cinematic 3D world (assets/js/world.js + scenes/home.js) ---------- */
   #scene3d{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block;
     transition:opacity .6s ease}
-  .no3d #scene3d{display:none}
+  .no3d #scene3d,.no3d .scrim{display:none}
   /* keeps copy legible where it sits over the scene: text lives on the left, the world on the right */
   .scrim{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:linear-gradient(90deg,var(--scrim) 0%,transparent 64%); /* fallback: no color-mix() */
     background:linear-gradient(90deg,
       color-mix(in srgb,var(--frost) 82%,transparent) 0%,
       color-mix(in srgb,var(--frost) 50%,transparent) 36%,
@@ -460,13 +462,17 @@
   /* ---------- responsive ---------- */
   /* desktop with the 3D world: content keeps the left column, the world owns the right */
   @media (min-width:1000px){
-    .has3d .stack,.has3d .works,.has3d .tl,.has3d .crows{max-width:min(720px,60%)}
-    .has3d .proj{grid-template-columns:1fr}
-    .has3d .proj__aside{border-left:0;padding-left:0;border-top:1px solid var(--line-soft);padding-top:20px}
-    .has3d .proj__shot{display:none} /* shown in the world as a floating screen instead */
+    .will3d .stack,.will3d .works,.will3d .tl,.will3d .crows{max-width:min(720px,60%)}
+    .will3d .proj{grid-template-columns:1fr}
+    .will3d .proj__aside{border-left:0;padding-left:0;border-top:1px solid var(--line-soft);padding-top:20px}
+    .will3d .proj__shot{display:none} /* shown in the world as a floating screen instead */
   }
-  @media (max-width:760px){
-    .scrim{background:color-mix(in srgb,var(--frost) 55%,transparent)}
+  @media (min-width:1000px) and (max-width:1199px){
+    .will3d .stack,.will3d .works,.will3d .tl,.will3d .crows{max-width:56%}
+  }
+  /* below 1000px text spans the full width, so the world sits behind an even veil (matches world.js) */
+  @media (max-width:999px){
+    .scrim{background:var(--scrim);background:color-mix(in srgb,var(--frost) 55%,transparent)}
   }
   @media (max-width:820px){
     .about__grid{grid-template-columns:1fr}
@@ -747,10 +753,13 @@
     var text = el.textContent.trim();
     var words = text.split(" ");
     el.textContent = "";
+    // the full name stays real heading text for assistive tech; the animated letters are decorative
+    var sr = document.createElement("span"); sr.className = "sr"; sr.textContent = text; el.appendChild(sr);
     var n = 0;
     words.forEach(function(word, wi){
       var w = document.createElement("span");
       w.className = "word";
+      w.setAttribute("aria-hidden", "true");
       word.split("").forEach(function(ch){
         // outer span carries the scroll scatter, inner span the load-in
         var o = document.createElement("span");

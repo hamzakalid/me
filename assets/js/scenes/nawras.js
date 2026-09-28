@@ -39,6 +39,9 @@ createWorld({
     }
     const rect = (w2, h2) => [V(-w2, -h2, 0), V(w2, -h2, 0), V(w2, h2, 0), V(-w2, h2, 0)];
     const circle = (n, r, c = V(0, 0, 0)) => Array.from({ length: n }, (_, i) => V(c.x + Math.cos((i / n) * TAU) * r, c.y + Math.sin((i / n) * TAU) * r, c.z));
+    /* small outlines (blocks, rings, shield, bars) look lumpy with the engine's default idle wobble (0.05),
+       so these formations use a quarter-strength shimmer */
+    const crisp = (spec) => formation({ ...spec, wobble: 0.025 });
 
     /* ---- station 0: the workflow canvas ---- */
     const FLOW = V(2, 0, 0);
@@ -47,15 +50,15 @@ createWorld({
       // the canvas' dot grid behind the blocks
       const gx = Math.round(23 * Math.sqrt(D)), gy = Math.round(13 * Math.sqrt(D));
       for (let i = 0; i < gx; i++) for (let j = 0; j < gy; j++)
-        add(g, V((i / (gx - 1) - 0.5) * 8.8, (j / (gy - 1) - 0.5) * 5.4, -1.15), rr(0.026, 0.036));
-      const layers = [2, 3, 4, 5, 4, 3, 2], LX = 1.08, BY = 0.9, bw = 0.8, bh = 0.44;
+        add(g, V((i / (gx - 1) - 0.5) * 7.6, (j / (gy - 1) - 0.5) * 5.0, -1.15), rr(0.045, 0.06));
+      const layers = [2, 3, 4, 5, 4, 3, 2], LX = 1.0, BY = 0.9, bw = 0.8, bh = 0.44;
       const outline = resample(rect(bw / 2, bh / 2), 18, true);
       const blocks = layers.map((cnt, L) => {
         const col = [];
         for (let b = 0; b < cnt; b++) {
           const dragged = L === 3 && b === 3; // one block lifted off the canvas mid-drag
-          const c = V((L - (layers.length - 1) / 2) * LX + rr(-0.06, 0.06), (b - (cnt - 1) / 2) * BY + rr(-0.05, 0.05), dragged ? 1.2 : rr(-0.3, 0.3));
-          if (dragged) outline.forEach((p, i) => { if (i % 2 === 0) add(g, p.clone().add(V(c.x - 0.12, c.y - 0.1, -0.4)), 0.032); }); // its empty slot
+          const c = V((L - (layers.length - 1) / 2) * LX + rr(-0.06, 0.06), (b - (cnt - 1) / 2) * BY + rr(-0.05, 0.05), dragged ? 1.8 : rr(-0.3, 0.3));
+          if (dragged) outline.forEach((p, i) => { if (i % 2 === 0) add(g, p.clone().add(V(c.x - 0.12, c.y - 0.1, -1.8)), 0.045); }); // its empty slot on the canvas
           path(g, outline.map((p) => p.clone().add(c)), () => rr(0.05, 0.072), true);
           path(g, [0, 1, 2, 3].map((i) => V(c.x - bw / 2 + 0.12 + (i * (bw - 0.24)) / 3, c.y + bh / 2 - 0.13, c.z)), 0.04); // header strip
           const inP = L > 0 ? add(g, V(c.x - bw / 2 - 0.08, c.y, c.z), 0.17) : -1;
@@ -67,7 +70,7 @@ createWorld({
       // connectors: every block feeds the next layer; signals flow left → right
       const wire = (a, b) => {
         const A = g.nodes[a].p, B = g.nodes[b].p;
-        for (let k = 1; k < 5; k++) add(g, A.clone().lerp(B, k / 5), 0.028);
+        for (let k = 1; k < 5; k++) add(g, A.clone().lerp(B, k / 5), 0.04);
         link(g, a, b, flow);
       };
       for (let L = 0; L < blocks.length - 1; L++) {
@@ -79,7 +82,7 @@ createWorld({
         });
         next.forEach((b, j) => { if (!fed.has(j)) wire(cur[Math.round((j / Math.max(1, next.length - 1)) * (cur.length - 1))].outP, b.inP); });
       }
-      formation({ center: FLOW, nodes: g.nodes, edges: g.edges, pulseEdges: flow, stations: [0], scatter: 8, pulses: 28, lineOpacity: 0.28 });
+      crisp({ center: FLOW, nodes: g.nodes, edges: g.edges, pulseEdges: flow, stations: [0], scatter: 8, pulses: 28, lineOpacity: 0.34 });
     })();
 
     /* ---- station 1: demo vs production ---- */
@@ -130,13 +133,13 @@ createWorld({
         add(g, V(Math.cos(th) * r, y, Math.sin(th) * r).multiplyScalar(0.62), rr(0.045, 0.075));
       }
       knnEdges(g.nodes, s0, s0 + S, 2, 0.42).forEach(([a, b]) => link(g, a, b));
-      const OR = 2.25; // dotted orbit the providers ride
-      circle(Math.round(150 * D), OR).forEach((p) => add(g, p, rr(0.028, 0.042)));
-      [0.5, 0.68, 0.45, 0.62, 0.56].forEach((R, k) => {
+      const OR = 2.0; // dotted orbit the providers ride
+      circle(Math.round(130 * D), OR).forEach((p) => add(g, p, rr(0.04, 0.055)));
+      [0.5, 0.64, 0.45, 0.6, 0.54].forEach((R, k) => {
         const a = (k / 5) * TAU + 0.35, c = V(Math.cos(a) * OR, Math.sin(a) * OR, 0);
         const pc = add(g, c, 0.24);
         link(g, hub, pc, fan);
-        const e = new THREE.Euler(rr(-1.2, 1.2), rr(-1.2, 1.2), rr(0, TAU));
+        const e = new THREE.Euler(rr(-0.55, 0.55), rr(-0.55, 0.55), rr(0, TAU)); // gentle tilt so each still reads as a ring
         const r0 = path(g, circle(34, R).map((p) => p.applyEuler(e).add(c)), () => rr(0.045, 0.07), true);
         if (k % 2 === 0) path(g, circle(18, R * 0.55).map((p) => p.applyEuler(e).add(c)), 0.045, true);
         for (let i = 0; i < 3; i++) link(g, pc, r0 + i * 11);
@@ -145,7 +148,7 @@ createWorld({
     })();
     (function knowledge() {
       const g = { nodes: [], edges: [] }, sig = [];
-      const C = V(1.6, -1.9, -1.6), N = Math.round(300 * D);
+      const C = V(0.9, -2.2, -1.6), N = Math.round(300 * D);
       for (let i = 0; i < N; i++) { const d = randDir(), r = Math.cbrt(rnd()); add(g, C.clone().add(V(d.x * 1.55 * r, d.y * r, d.z * r)), rr(0.032, 0.058)); }
       const e0 = g.nodes.length, E = 16;
       for (let i = 0; i < E; i++) { const d = randDir().multiplyScalar(rr(0.25, 1)); add(g, C.clone().add(V(d.x * 1.3, d.y * 0.8, d.z * 0.8)), i < 5 ? rr(0.17, 0.22) : rr(0.1, 0.14)); }
@@ -156,15 +159,23 @@ createWorld({
         near.sort((a, b) => a[0] - b[0]);
         for (let m = 0; m < 4; m++) link(g, i, near[m][1]);
       }
-      const port = add(g, GATE.clone().sub(CAP), 0.001); // retrieval runs between the cloud and the gateway hub
-      for (let k = 0; k < 3; k++) { link(g, port, e0 + k, sig); link(g, e0 + k, port, sig); }
+      // retrieval runs between the gateway hub and three different entities: two queries out, one context back
+      const hubAt = GATE.clone().sub(CAP);
+      [[-0.15, true], [0, false], [0.15, true]].forEach(([o, out], k) => {
+        const port = add(g, hubAt.clone().add(V(o, -o, 0)), 0.001), ent = e0 + k * 2;
+        if (out) link(g, port, ent, sig); else link(g, ent, port, sig);
+      });
       formation({ center: CAP, nodes: g.nodes, edges: g.edges, pulseEdges: sig, stations: [2], scatter: 6, pulses: 14, lineOpacity: 0.22 });
     })();
 
     /* ---- stations 3–4: the run pipeline, five stage glyphs on a rail ---- */
-    const MK = [V(-10, -0.6, -57), V(-5.8, 0.2, -62.5), V(-1.5, -0.4, -67.5), V(2.8, 0.3, -71.5), V(13, -0.2, -77)];
+    // the rail zig-zags up into depth: from station 3 every stage is separate, and at station 4 the earlier stages
+    // are behind the camera or to the right of Trace, so the rail enters from the bottom right (never under the text)
+    const MK = [V(-6, -0.6, -55), V(-7, -0.8, -62), V(-3.1, -1.1, -67.5), V(-0.4, -0.7, -71.5), V(-2.1, -0.4, -75.5)];
     const railCurve = curve([MK[0].clone().add(V(-1.8, -0.3, 2.2)), ...MK, MK[4].clone().add(V(3.2, 0.2, -1.4))]);
     const RAIL = MK.reduce((a, b) => a.add(b), V(0, 0, 0)).multiplyScalar(1 / MK.length);
+    const F3 = MK[0].clone().lerp(MK[1], 0.5).add(V(0, 1.3, 0)), F4 = MK[4].clone().add(V(0, 1.3, 0));
+    const CAM3 = F3.clone().add(V(-1.9, 6.5, 12.1)), CAM4 = F4.clone().add(V(-5, 7.2, 7.2)); // station 4 cranes up over the monitor
     const LIFT = V(0, 2.15, 0), GS = 1.2; // glyphs float above their stage marker, scaled up
     const glyphs = [
       function compose(g, T, sig) { // three blocks wired into a branch
@@ -183,7 +194,8 @@ createWorld({
           path(g, circle(14, 0.22, V(x, y, 0)).map(T), 0.05, true);
         });
       },
-      function ground(g, T, sig) { // a vector store with retrieved chunks rising out of it
+      function ground(g, T0, sig) { // a vector store with retrieved chunks rising out of it
+        const tip = new THREE.Euler(0.5, 0, 0), T = (p) => T0(p.clone().applyEuler(tip)); // tipped towards the viewer so the rings open up
         const rings = [-0.55, 0, 0.55].map((y) => path(g, circle(30, 0.72).map((p) => T(V(p.x, y, p.y))), () => rr(0.048, 0.07), true));
         [0, 8, 15, 23].forEach((i) => { link(g, rings[0] + i, rings[1] + i); link(g, rings[1] + i, rings[2] + i); });
         const top = add(g, T(V(0, 0.55, 0)), 0.18);
@@ -224,7 +236,9 @@ createWorld({
         path(g, circle(24, 0.5).map((p) => loc(m).addScaledVector(up, p.x).addScaledVector(side, p.y)), 0.055, true);
         for (let s = 0; s < 5; s++) add(g, loc(m).add(V(0, 0.4 + s * 0.17, 0)), 0.035); // stem up to the glyph
         const c = m.clone().add(LIFT);
-        const R = new THREE.Matrix4().lookAt(c.clone().add(V(-1.2, 1.4, 10)), c, up).scale(V(GS, GS, GS)).setPosition(loc(c));
+        // each glyph turns to the camera that shows it; Trace is seen from both stations, so it splits the difference
+        const face = CAM3.clone().sub(c).normalize().add(k === 4 ? CAM4.clone().sub(c).normalize() : V(0, 0, 0));
+        const R = new THREE.Matrix4().lookAt(c.clone().add(face), c, up).scale(V(GS, GS, GS)).setPosition(loc(c));
         glyphs[k](g, (p) => p.clone().applyMatrix4(R), sig);
         return hub;
       });
@@ -233,11 +247,11 @@ createWorld({
         const mid = add(g, loc(railCurve.getPoint((k + 1.5) / (MK.length + 1))), 0.06);
         link(g, marks[k], mid, run); link(g, mid, marks[k + 1], run);
       }
-      formation({ center: RAIL, nodes: g.nodes, edges: g.edges, pulseEdges: [...run, ...run, ...sig], stations: [3, 4], scatter: 7, pulses: 24, lineOpacity: 0.26 });
+      crisp({ center: RAIL, nodes: g.nodes, edges: g.edges, pulseEdges: [...run, ...run, ...sig], stations: [3, 4], scatter: 7, pulses: 26, lineOpacity: 0.26 });
     })();
 
     /* ---- station 5: eval and tracing ---- */
-    const EVAL = V(-7, 1, -97);
+    const EVAL = V(-7, 3.5, -102); // deep and a little high: above the frame of station 4's downward look, so it never ghosts behind the steps
     (function evalTrace() {
       const g = { nodes: [], edges: [] }, sig = [];
       // a trace waterfall: one span per step, staggered in time like a tracing UI
@@ -246,8 +260,8 @@ createWorld({
       const spans = [[0, 1], [0.02, 0.17], [0.2, 0.1], [0.31, 0.2], [0.33, 0.1], [0.4, 0.11], [0.52, 0.29], [0.82, 0.07], [0.9, 0.1]];
       const ends = spans.map(([s, l], row) => {
         const y = top - row * rowH, z = -row * 0.06, x0 = X0 + s * W, x1 = X0 + (s + l) * W;
-        const n = Math.max(3, Math.round((x1 - x0) / 0.085));
-        for (let i = 0; i <= n; i++) for (const dy of [-0.08, 0, 0.08]) add(g, V(x0 + ((x1 - x0) * i) / n, y + dy, z), rr(0.042, 0.058));
+        const n = Math.max(3, Math.round((x1 - x0) / 0.07)); // a dense 5-row band so each span reads as a solid bar
+        for (let i = 0; i <= n; i++) for (const dy of [-0.1, -0.05, 0, 0.05, 0.1]) add(g, V(x0 + ((x1 - x0) * i) / n, y + dy, z), rr(0.04, 0.055));
         const a = add(g, V(x0, y, z), 0.17), b = add(g, V(x1, y, z), 0.09);
         link(g, a, b, sig); // a signal runs the length of each span
         return [a, b];
@@ -260,17 +274,17 @@ createWorld({
       for (let i = 0; i <= 36; i++) add(g, V(X0 + (W * i) / 36, top + 0.42, 0.1), i % 4 === 0 ? 0.06 : 0.03); // time axis
       for (let i = 0; i < 24; i++) add(g, V(X0 + 0.74 * W, top + 0.45 - (i / 23) * (spans.length * rowH + 0.3), 0), 0.036); // cursor
       // the eval score ring
-      const RC = V(2.2, 0.5, -0.6), RR = 0.95, score = 0.86;
-      circle(72, RR, RC).forEach((p) => add(g, p, 0.03));
+      const RC = V(1.9, 0.45, -0.6), RR = 0.95, score = 0.86;
+      circle(48, RR, RC).forEach((p) => add(g, p, 0.02)); // faint full track, so the 14% gap in the score arc shows
       circle(24, RR * 0.78, RC).forEach((p) => add(g, p, 0.05));
       const A = Math.round(72 * score), arc = [];
       for (let i = 0; i <= A; i++) { const a = Math.PI / 2 - (i / 72) * TAU; arc.push(V(RC.x + Math.cos(a) * RR, RC.y + Math.sin(a) * RR, RC.z)); }
-      const a0 = path(g, arc, () => rr(0.075, 0.1), false, sig);
-      g.nodes[a0].s = 0.16; g.nodes[a0 + A].s = 0.26;
+      const a0 = path(g, arc, () => rr(0.09, 0.12), false, sig);
+      g.nodes[a0].s = 0.16; g.nodes[a0 + A].s = 0.3;
       path(g, circle(16, 0.3, RC), 0.05, true);
       add(g, RC.clone(), 0.2);
       link(g, rootEnd, a0, sig); // traces feed the evaluation
-      formation({ center: EVAL, nodes: g.nodes, edges: g.edges, pulseEdges: sig, stations: [5], scatter: 7, pulses: 20, lineOpacity: 0.26 });
+      crisp({ center: EVAL, nodes: g.nodes, edges: g.edges, pulseEdges: sig, stations: [5], scatter: 7, pulses: 22, lineOpacity: 0.26 });
     })();
 
     /* ---- station 6: the reusable core, branching into Nebras and the BI Agent ---- */
@@ -279,12 +293,14 @@ createWorld({
       const g = { nodes: [], edges: [] }, sig = [];
       const K = V(-1.8, -0.2, 0), rot = new THREE.Euler(0, Math.PI / 4, 0);
       const sq = resample([V(-0.8, 0, -0.8), V(0.8, 0, -0.8), V(0.8, 0, 0.8), V(-0.8, 0, 0.8)], 28, true);
-      [-0.62, 0, 0.62].forEach((y) => { // three stacked platform layers
-        path(g, sq.map((p) => p.clone().applyEuler(rot).add(K).add(V(0, y, 0))), () => rr(0.05, 0.07), true);
+      const LY = 0.7;
+      [-LY, 0, LY].forEach((y) => { // three stacked platform slabs, corners marked so each reads as a distinct layer
+        const s0 = path(g, sq.map((p) => p.clone().applyEuler(rot).add(K).add(V(0, y, 0))), () => rr(0.05, 0.07), true);
+        for (let c = 0; c < 4; c++) g.nodes[s0 + c * 7].s = 0.1;
         for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) if (i !== 1 || j !== 1) add(g, V((i - 1) * 0.42, y, (j - 1) * 0.42).applyEuler(rot).add(K), 0.04);
       });
-      const core = add(g, K.clone().add(V(0, 0.62, 0)), 0.32);
-      const mid = add(g, K.clone(), 0.12), foot = add(g, K.clone().add(V(0, -0.62, 0)), 0.12);
+      const core = add(g, K.clone().add(V(0, LY, 0)), 0.32);
+      const mid = add(g, K.clone(), 0.12), foot = add(g, K.clone().add(V(0, -LY, 0)), 0.12);
       link(g, core, mid, sig); link(g, mid, foot, sig); // the core's spine
       const branch = (to, via) => { // dotted curve with signals riding three chords
         const pts = curve([g.nodes[core].p.clone(), via, g.nodes[to].p.clone()]).getSpacedPoints(18);
@@ -293,19 +309,21 @@ createWorld({
         link(g, core, k1, sig); link(g, k1, k2, sig); link(g, k2, to, sig);
       };
       // Nebras: a small ontology around an agent hub
-      const NB = V(1.7, 1.6, -0.6), nh = add(g, NB, 0.28), concepts = [];
+      // six concepts on a tilted ring around the hub, each with a few instances, related to their neighbours
+      const NB = V(1.7, 1.6, -0.6), nh = add(g, NB, 0.28), concepts = [], tilt = new THREE.Euler(0.5, 0, 0.3);
       for (let c = 0; c < 6; c++) {
-        const d = randDir().multiplyScalar(rr(0.75, 0.9)), ci = add(g, NB.clone().add(d), 0.16);
+        const a = (c / 6) * TAU, d = V(Math.cos(a) * 0.85, 0, Math.sin(a) * 0.85).applyEuler(tilt), ci = add(g, NB.clone().add(d), 0.16);
         concepts.push(ci); link(g, nh, ci, sig);
-        for (let l = 0, L = Math.round(11 * D); l < L; l++) link(g, ci, add(g, NB.clone().add(d).add(randDir().multiplyScalar(rr(0.15, 0.36))), rr(0.035, 0.06)));
+        for (let l = 0, L = Math.max(4, Math.round(6 * D)); l < L; l++) link(g, ci, add(g, NB.clone().add(d).add(randDir().multiplyScalar(rr(0.15, 0.28))), rr(0.035, 0.06)));
       }
-      for (let c = 0; c < 6; c++) link(g, concepts[c], concepts[(c + 2) % 6]);
+      for (let c = 0; c < 6; c++) link(g, concepts[c], concepts[(c + 1) % 6]);
       // BI Agent: a small bar chart growing on a data grid
       const BB = V(1.8, -1.8, 0.4);
       for (let x = 0; x < 7; x++) for (let z = 0; z < 4; z++) add(g, BB.clone().add(V((x - 3) * 0.26, 0, (z - 1.5) * 0.26)), 0.035);
       const bAnchor = add(g, BB.clone().add(V(-1.05, 0, 0)), 0.16);
-      for (let bx = 0; bx < 4; bx++) for (let bz = 0; bz < 2; bz++) {
-        const h = 0.35 + bx * 0.27 + bz * 0.1 + rr(0, 0.12), x0 = (bx - 1.5) * 0.42, z0 = (bz - 0.5) * 0.42, hw = 0.13, tops = [];
+      for (let bx = 0; bx < 4; bx++) for (let bz = 0; bz < 1; bz++) { // four bars with a clear rising trend
+        const h = 0.4 + bx * 0.32, x0 = (bx - 1.5) * 0.46, z0 = 0, hw = 0.16, tops = [];
+        for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) add(g, BB.clone().add(V(x0 + i * hw * 0.6, h, z0 + j * hw * 0.6)), 0.055); // solid top
         [[-hw, -hw], [hw, -hw], [hw, hw], [-hw, hw]].forEach(([dx, dz]) => {
           const steps = Math.max(2, Math.round(h / 0.16));
           let prev = -1;
@@ -320,11 +338,11 @@ createWorld({
       }
       branch(nh, V(-0.1, 1.3, -0.2));
       branch(bAnchor, V(-0.4, -1.25, 0.2));
-      formation({ center: REUSE, nodes: g.nodes, edges: g.edges, pulseEdges: sig, stations: [6], scatter: 7, pulses: 22, lineOpacity: 0.26 });
+      crisp({ center: REUSE, nodes: g.nodes, edges: g.edges, pulseEdges: sig, stations: [6], scatter: 7, pulses: 22, lineOpacity: 0.26 });
     })();
 
     /* ---- ambient data dust along the whole route (follows the formations' sway) ---- */
-    const sway = [[30, 2], [0, 2], [-25, -7], [-42, 7], [-68, 0], [-97, -7], [-118, 7], [-140, 7]];
+    const sway = [[30, 2], [0, 2], [-25, -7], [-42, 7], [-66, -4], [-102, -7], [-118, 7], [-140, 7]];
     dust({ count: 2400, zFrom: 24, zTo: -136, sway: (z) => {
       for (let i = 0; i < sway.length - 1; i++) {
         const [za, xa] = sway[i], [zb, xb] = sway[i + 1];
@@ -333,17 +351,20 @@ createWorld({
       return V(0, 0, 0);
     } });
 
-    const F3 = MK[0].clone().add(V(0, 1.3, 0)), F4 = MK[4].clone().add(V(0, 1.3, 0));
+    /* phones: the canvas sits behind the card stacks, so where a section leaves an empty band below its cards
+       (gallery, outcome), raise the camera and its target together so the formation drops into that band */
+    // on narrow screens drop these formations into the empty band below their card stacks (applied live on resize)
+    const nudge = (st, dy) => ({ ...st, narrowOffset: V(0, dy, 0) });
     return {
       stations: [
-        { sel: ".phero", F: FLOW, cam: FLOW.clone().add(V(-6.8, 2.7, 16.3)), shift: 0.4, narrowScale: 1.1 },
+        { sel: ".phero", F: FLOW, cam: FLOW.clone().add(V(-4.8, 3.4, 16.6)), shift: 0.41, narrowScale: 1.1 },
         { sel: "#overview", F: GAP, cam: GAP.clone().add(V(-1.5, -0.8, 15)), shift: 0.38, narrowScale: 1.1 },
-        { sel: "#capabilities", F: CAP, cam: CAP.clone().add(V(4, 1.8, 15)), shift: 0.38, narrowScale: 1.1 },
-        { sel: "#how .step:first-child", F: F3, cam: F3.clone().add(V(-4.5, 2.6, 10.5)), shift: 0.34, narrowScale: 1.15 },
-        { sel: "#how .step:last-child", F: F4, cam: F4.clone().add(V(3, 2.2, 10)), shift: 0.34, narrowScale: 1.15 },
-        { sel: "#gallery", F: EVAL.clone().add(V(0.35, 0.3, 0)), cam: EVAL.clone().add(V(-1.2, 1.4, 14.5)), shift: 0.41, narrowScale: 1.1 },
-        { sel: "#outcome", F: REUSE, cam: REUSE.clone().add(V(4.5, 4.2, 14)), shift: 0.38, narrowScale: 1.1 },
-        { sel: "#next", F: V(0, -6, -66), cam: V(10, 27, 50), shift: 0.42, narrowScale: 1 },
+        { sel: "#capabilities", F: CAP, cam: CAP.clone().add(V(4, 1.8, 15)), shift: 0.4, narrowScale: 1.1 },
+        { sel: "#how .step:first-child", F: F3, cam: CAM3, shift: 0.34, narrowScale: 1.15 },
+        { sel: "#how .step:last-child", F: F4, cam: CAM4, shift: 0.36, narrowScale: 1.15 },
+        nudge({ sel: "#gallery", F: EVAL.clone().add(V(0.35, 0.3, 0)), cam: EVAL.clone().add(V(-1.2, 1.4, 14.5)), shift: 0.41, narrowScale: 1.1 }, 6),
+        nudge({ sel: "#outcome", F: REUSE, cam: REUSE.clone().add(V(4.8, 4.5, 15)), shift: 0.38, narrowScale: 1.1 }, 6.4),
+        { sel: "#next", F: V(0, -10, -66), cam: V(10, 24, 50), shift: 0.42, narrowScale: 1 },
       ],
       fog: { finaleNear: 110, finaleFar: 250 },
     };

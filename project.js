@@ -66,8 +66,9 @@
   function titleScatter(){
     var el = document.querySelector(".ptitle"); if(!el) return;
     var label = el.textContent.trim();
-    el.setAttribute("aria-label", label);
     el.textContent = "";
+    // the full title stays real heading text for assistive tech; the animated letters are decorative
+    var sr = document.createElement("span"); sr.className = "sr-only"; sr.textContent = label; el.appendChild(sr);
     label.split(" ").forEach(function(word, wi){
       var w = document.createElement("span"); w.className = "word"; w.setAttribute("aria-hidden", "true");
       word.split("").forEach(function(ch){
@@ -131,7 +132,9 @@
       });
       function clamp(i){ return (i % slides.length + slides.length) % slides.length; }
       function go(i, user){ index = clamp(i);
-        slides[index].scrollIntoView({ behavior: RM ? "auto":"smooth", inline:"center", block:"nearest" });
+        // scroll the strip only: scrollIntoView would also nudge the page, and page scroll drives the 3D camera
+        var sl = slides[index];
+        vp.scrollTo({ left: sl.offsetLeft - (vp.clientWidth - sl.offsetWidth) / 2, behavior: RM ? "auto" : "smooth" });
         if(user) restart(); }
       function paint(){
         var mid = vp.scrollLeft + vp.clientWidth/2, best=0, bd=Infinity;
@@ -190,4 +193,5 @@
   }
 
   theme(); titleScatter(); splitHeads(); reveals(); scrollProgress(); magnetic(); carousel(); compare();
+  window.__projectReady = true; // the page's head script un-hides content if this never runs
 })();

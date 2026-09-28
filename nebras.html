@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<script>(function(){try{document.documentElement.classList.add("js");var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<script>(function(){try{document.documentElement.classList.add("js");if(window.WebGLRenderingContext)document.documentElement.classList.add("will3d");document.addEventListener("DOMContentLoaded",function(){setTimeout(function(){if(!window.__projectReady)document.documentElement.classList.remove("js");},2500);});var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <title>Nebras - Case study | Hamza Salman</title>
 <meta name="description" content="Case study: Nebras, an agentic AI for the Nawras ERP that understands enterprise data through ontology and semantic layers, then acts on it." />
 <meta name="author" content="Hamza Salman" />

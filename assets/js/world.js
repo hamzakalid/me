@@ -14,25 +14,45 @@
        F     world point the camera looks at (the formation's centre)
        cam   camera position
        shift fraction of the camera distance to slide the view target left, so F sits in the right
-             half of the screen on desktop (text lives on the left); ignored on narrow screens
+             half of the screen on desktop (text lives on the left); scaled down on portrait-ish aspect
+             ratios and ignored on narrow screens (< 1000px, where text spans the full width)
+       inside       true for a shot from within a formation (not pulled back on narrow screens)
+       narrowScale  how far to pull the camera back on narrow screens (default 1.3)
+       narrowOffset Vector3 added to F and cam on narrow screens (e.g. drop a formation below a card stack)
+     fog: { near, far, narrowNear, narrowFar, finaleNear, finaleFar }   all optional
 
-   Content always stays in the DOM. Without WebGL the page gets <html class="no3d">; with it,
-   <html class="has3d">. Reduced motion: formations stay assembled and the camera cuts between
-   stations instead of flying. Rendering pauses while the tab is hidden. */
+   Content always stays in the DOM. The page's inline head script adds <html class="will3d"> when WebGL
+   looks available (so the layout does not shift later); without usable WebGL this engine swaps it for
+   "no3d", with it adds "has3d". Software-only WebGL counts as unusable unless the URL has ?3d=force.
+   Reduced motion: only the current station's formations are shown, assembled, and the camera cuts
+   between stations instead of flying. Rendering pauses while the tab is hidden. */
 import * as THREE from "../vendor/three.module.min.js";
 
 export function createWorld({ canvas, build }) {
   const root = document.documentElement;
   const RM = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  const FORCE = /[?&]3d=force\b/.test(location.search);
+  const CTX = { failIfMajorPerformanceCaveat: !FORCE };
   function webglOK() {
     try {
+      if (!window.WebGLRenderingContext) return false;
       const c = document.createElement("canvas");
-      return !!(window.WebGLRenderingContext && (c.getContext("webgl2") || c.getContext("webgl")));
+      const gl = c.getContext("webgl2", CTX) || c.getContext("webgl", CTX);
+      if (!gl) return false;
+      const lose = gl.getExtension("WEBGL_lose_context");
+      if (lose) lose.loseContext(); // release the probe context right away
+      return true;
     } catch (e) { return false; }
   }
-  if (!canvas || !webglOK()) { root.classList.add("no3d"); return null; }
-  try { return init(); } catch (e) { root.classList.add("no3d"); if (canvas) canvas.style.display = "none"; console.error(e); return null; }
+  function fallback() { root.classList.remove("will3d", "has3d"); root.classList.add("no3d"); if (canvas) canvas.style.display = "none"; }
+  if (!canvas || !webglOK()) { fallback(); return null; }
+  let renderer = null;
+  try { return init(); } catch (e) {
+    fallback(); console.error(e);
+    if (renderer) { renderer.dispose(); renderer.forceContextLoss(); }
+    return null;
+  }
 
   function init() {
     /* ---------------- helpers ---------------- */
@@ -47,10 +67,11 @@ export function createWorld({ canvas, build }) {
       const u = rnd() * 2 - 1, th = rnd() * Math.PI * 2, s = Math.sqrt(1 - u * u);
       return V(Math.cos(th) * s, u, Math.sin(th) * s);
     }
-    const narrowNow = () => window.innerWidth < 760;
+    // one breakpoint for layout-dependent behaviour: below 1000px the text spans the full width (see the CSS)
+    const narrowNow = () => window.innerWidth < 1000;
 
     /* ---------------- renderer / camera ---------------- */
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance", ...CTX });
     renderer.setClearColor(0x000000, 0);
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 400);
@@ -67,17 +88,18 @@ export function createWorld({ canvas, build }) {
 
     const pointVert = /* glsl */`
       attribute vec3 aScatter; attribute float aSeed; attribute float aSize;
-      uniform float uTime, uScale, uAssemble, uFogNear, uFogFar;
+      uniform float uTime, uScale, uAssemble, uFogNear, uFogFar, uWobble;
       varying float vAlpha; varying float vHot;
       void main(){
         float t = clamp(uAssemble * 1.7 - aSeed * 0.7, 0.0, 1.0);
         t = t * t * (3.0 - 2.0 * t);
         vec3 p = mix(aScatter, position, t);
-        p += 0.05 * vec3(sin(uTime * 0.7 + aSeed * 40.0), cos(uTime * 0.6 + aSeed * 23.0), sin(uTime * 0.5 + aSeed * 11.0));
+        p += uWobble * vec3(sin(uTime * 0.7 + aSeed * 40.0), cos(uTime * 0.6 + aSeed * 23.0), sin(uTime * 0.5 + aSeed * 11.0));
         vec4 mv = modelViewMatrix * vec4(p, 1.0);
         float depth = -mv.z;
         gl_Position = projectionMatrix * mv;
-        gl_PointSize = min(aSize * uScale / max(depth, 0.1), 72.0);
+        // cap points that pass close to the camera so they never bloom into halos over the text
+        gl_PointSize = min(aSize * uScale / max(depth, 0.1), mix(26.0, 72.0, smoothstep(1.5, 6.0, depth)));
         float tw = 0.75 + 0.25 * sin(uTime * 1.6 + aSeed * 60.0);
         vAlpha = (0.25 + 0.75 * t) * tw * smoothstep(0.6, 3.2, depth) * (1.0 - smoothstep(uFogNear, uFogFar, depth));
         vHot = step(0.16, aSize);
@@ -97,13 +119,13 @@ export function createWorld({ canvas, build }) {
       }`;
     const lineVert = /* glsl */`
       attribute vec3 aScatter; attribute float aSeed;
-      uniform float uTime, uAssemble, uFogNear, uFogFar;
+      uniform float uTime, uAssemble, uFogNear, uFogFar, uWobble;
       varying float vAlpha;
       void main(){
         float t = clamp(uAssemble * 1.7 - aSeed * 0.7, 0.0, 1.0);
         t = t * t * (3.0 - 2.0 * t);
         vec3 p = mix(aScatter, position, t);
-        p += 0.05 * vec3(sin(uTime * 0.7 + aSeed * 40.0), cos(uTime * 0.6 + aSeed * 23.0), sin(uTime * 0.5 + aSeed * 11.0));
+        p += uWobble * vec3(sin(uTime * 0.7 + aSeed * 40.0), cos(uTime * 0.6 + aSeed * 23.0), sin(uTime * 0.5 + aSeed * 11.0));
         vec4 mv = modelViewMatrix * vec4(p, 1.0);
         float depth = -mv.z;
         gl_Position = projectionMatrix * mv;
@@ -114,9 +136,9 @@ export function createWorld({ canvas, build }) {
       void main(){ gl_FragColor = vec4(uColor, vAlpha * uOpacity); }`;
 
     const materials = [];
-    function shaderMaterial(vert, frag, opacity) {
+    function shaderMaterial(vert, frag, opacity, wobble = 0.05) {
       const m = new THREE.ShaderMaterial({
-        uniforms: { ...U, uAssemble: { value: 0 }, uOpacity: { value: opacity } },
+        uniforms: { ...U, uAssemble: { value: 0 }, uOpacity: { value: opacity }, uWobble: { value: wobble } },
         vertexShader: vert, fragmentShader: frag,
         transparent: true, depthWrite: false,
       });
@@ -136,8 +158,10 @@ export function createWorld({ canvas, build }) {
          pulses      number of signals
          lineOpacity edge opacity
          always      true = ignore stations and stay assembled (ambient layers)
-         opacity     overall point opacity (default 1) */
-    function formation({ center, nodes, edges = [], pulseEdges, stations = [], spin = null, scatter = 6, pulses = 10, lineOpacity = 0.22, always = false, opacity = 1 }) {
+         opacity     overall point opacity (default 1)
+         wobble      idle shimmer per axis in local units (default 0.05; ~0.02 keeps small outlines crisp)
+         range       [start, end] distance in stations over which it dissolves (default [0.4, 1.15]) */
+    function formation({ center, nodes, edges = [], pulseEdges, stations = [], spin = null, scatter = 6, pulses = 10, lineOpacity = 0.22, always = false, opacity = 1, wobble = 0.05, range = [0.4, 1.15] }) {
       const group = new THREE.Group();
       group.position.copy(center);
       scene.add(group);
@@ -156,10 +180,10 @@ export function createWorld({ canvas, build }) {
       g.setAttribute("aScatter", new THREE.BufferAttribute(sca, 3));
       g.setAttribute("aSeed", new THREE.BufferAttribute(sd, 1));
       g.setAttribute("aSize", new THREE.BufferAttribute(sz, 1));
-      const pm = shaderMaterial(pointVert, pointFrag, opacity);
+      const pm = shaderMaterial(pointVert, pointFrag, opacity, wobble);
       const pts = new THREE.Points(g, pm); pts.frustumCulled = false; group.add(pts);
 
-      let lm = null;
+      let lm = null, lines = null;
       if (edges.length) {
         const lp = new Float32Array(edges.length * 6), ls = new Float32Array(edges.length * 6), lsd = new Float32Array(edges.length * 2);
         edges.forEach(([a, b], k) => {
@@ -172,8 +196,8 @@ export function createWorld({ canvas, build }) {
         lg.setAttribute("position", new THREE.BufferAttribute(lp, 3));
         lg.setAttribute("aScatter", new THREE.BufferAttribute(ls, 3));
         lg.setAttribute("aSeed", new THREE.BufferAttribute(lsd, 1));
-        lm = shaderMaterial(lineVert, lineFrag, lineOpacity);
-        const lines = new THREE.LineSegments(lg, lm); lines.frustumCulled = false; group.add(lines);
+        lm = shaderMaterial(lineVert, lineFrag, lineOpacity, wobble);
+        lines = new THREE.LineSegments(lg, lm); lines.frustumCulled = false; group.add(lines);
       }
 
       // signals travelling along edges
@@ -194,7 +218,7 @@ export function createWorld({ canvas, build }) {
         pg.setAttribute("aScatter", attr);
         pg.setAttribute("aSeed", new THREE.BufferAttribute(psd, 1));
         pg.setAttribute("aSize", new THREE.BufferAttribute(psz, 1));
-        qm = shaderMaterial(pointVert, pointFrag, 0);
+        qm = shaderMaterial(pointVert, pointFrag, 0, wobble);
         qm.uniforms.uAssemble.value = 1;
         const q = new THREE.Points(pg, qm); q.frustumCulled = false; group.add(q);
       }
@@ -205,12 +229,13 @@ export function createWorld({ canvas, build }) {
           let a = 1;
           if (!always) {
             a = 0;
-            for (const s of stations) a = Math.max(a, 1 - smooth(0.5, 1.45, Math.abs(u - s)));
+            if (RM) { for (const s of stations) if (Math.abs(u - s) < 0.5) a = 1; } // only the current station
+            else for (const s of stations) a = Math.max(a, 1 - smooth(range[0], range[1], Math.abs(u - s)));
             a = Math.max(a, cw);
           }
           f.assemble = a;
           pm.uniforms.uAssemble.value = a;
-          if (lm) lm.uniforms.uAssemble.value = a;
+          if (lm) { lm.uniforms.uAssemble.value = a; lines.visible = a > 0.002; }
           if (spin) { group.rotation.x += spin.x * dt; group.rotation.y += spin.y * dt; group.rotation.z += spin.z * dt; }
           if (P) {
             qm.uniforms.uOpacity.value = a * a * a;
@@ -219,7 +244,7 @@ export function createWorld({ canvas, build }) {
                 const st = pulseState[i];
                 const [ia, ib] = edges[st.e];
                 const A = nodes[ia].p, B = nodes[ib].p;
-                st.t += dt * st.v * (1.6 / Math.max(0.4, A.distanceTo(B)));
+                st.t += dt * st.v * (1.6 / Math.max(0.4, A.distanceTo(B) * group.scale.x)); // world units
                 if (st.t >= 1) { st.t = 0; st.e = pe[(rnd() * pe.length) | 0]; st.v = rr(0.5, 1.1); }
                 pp[i * 3] = A.x + (B.x - A.x) * st.t; pp[i * 3 + 1] = A.y + (B.y - A.y) * st.t; pp[i * 3 + 2] = A.z + (B.z - A.z) * st.t;
               }
@@ -292,9 +317,19 @@ export function createWorld({ canvas, build }) {
         if (tex[which] === null) return; // in flight
         tex[which] = null;
         loader.load(typeof src === "string" ? src : src[which], (t) => {
+          // the planes are small on screen: upload a ~1024px copy instead of the full 1920px image
+          const img = t.image;
+          if (img && img.width > 1024) {
+            const c = document.createElement("canvas");
+            c.width = 1024; c.height = Math.round((1024 * img.height) / img.width);
+            c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+            t.dispose(); t = new THREE.CanvasTexture(c);
+          }
           t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; tex[which] = t;
+          renderer.initTexture(t); // upload now, not on the first visible frame
           if (variant() === which) { m.map = t; m.needsUpdate = true; }
-        });
+          requestRender();
+        }, undefined, () => { delete tex[which]; console.warn("world: could not load screen image", src); });
       }
       const s = { mesh, m, frame, stations, face: face ?? stations[0], tilt, bob, baseY: center.y, phase: rnd() * 6.28,
         themed() { if (wanted) load(); },
@@ -327,12 +362,16 @@ export function createWorld({ canvas, build }) {
       const narrow = narrowNow();
       const up = V(0, 1, 0);
       const cams = [], tgts = [];
+      // shift values are tuned at ~16:10; on squarer screens the same shift would push F off the right edge
+      const aspectK = Math.min(1, camera.aspect / 1.6);
       stations.forEach((s) => {
+        const F = s.F.clone();
         let cam = s.cam.clone();
-        if (narrow && !s.inside) cam = s.F.clone().add(cam.clone().sub(s.F).multiplyScalar(s.narrowScale || 1.3));
-        const dir = s.F.clone().sub(cam), dist = dir.length(); dir.normalize();
+        if (narrow && s.narrowOffset) { F.add(s.narrowOffset); cam.add(s.narrowOffset); }
+        if (narrow && !s.inside) cam = F.clone().add(cam.clone().sub(F).multiplyScalar(s.narrowScale || 1.3));
+        const dir = F.clone().sub(cam), dist = dir.length(); dir.normalize();
         const right = dir.clone().cross(up).normalize();
-        const tgt = s.F.clone().addScaledVector(right, -(narrow ? 0 : s.shift || 0) * dist);
+        const tgt = F.clone().addScaledVector(right, -(narrow ? 0 : (s.shift || 0) * aspectK) * dist);
         cams.push(cam); tgts.push(tgt);
       });
       camCurve = new THREE.CatmullRomCurve3(cams, false, "centripetal");
@@ -377,13 +416,17 @@ export function createWorld({ canvas, build }) {
       U.uHot.value.set(dark ? "#eef1ff" : "#0f1c8f");
       materials.forEach((m) => { m.blending = dark ? THREE.AdditiveBlending : THREE.NormalBlending; m.needsUpdate = true; });
       screens.forEach((s) => { s.frame.material.color.set(dark ? "#6f86ff" : "#2740E6"); s.themed(); });
-      if (RM) frame(performance.now(), true);
+      requestRender();
     }
     new MutationObserver(applyTheme).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
 
     /* ---------------- sizing ---------------- */
-    function resize() {
+    let lastW = 0, lastH = 0;
+    function resize(force) {
       const w = window.innerWidth, h = window.innerHeight;
+      // mobile browsers resize the viewport as the URL bar shows/hides; don't rebuild the scene for that
+      if (!force && w === lastW && Math.abs(h - lastH) < 120) { measure(); return; }
+      lastW = w; lastH = h;
       const pr = Math.min(window.devicePixelRatio || 1, w < 760 ? 1.5 : 1.75);
       renderer.setPixelRatio(pr);
       renderer.setSize(w, h, false);
@@ -397,8 +440,8 @@ export function createWorld({ canvas, build }) {
     /* ---------------- loop ---------------- */
     const camPos = V(0, 0, 0), tgt = V(0, 0, 0), mouse = { x: 0, y: 0, tx: 0, ty: 0 };
     let uCur = 0, last = performance.now(), raf = 0, running = false, ready = false;
-    const fogNear = spec.fog?.near ?? 16, fogFar = spec.fog?.far ?? 46;
-    const finNear = spec.fog?.finaleNear ?? 90, finFar = spec.fog?.finaleFar ?? 216;
+    const fog = spec.fog || {};
+    const finNear = fog.finaleNear ?? 90, finFar = fog.finaleFar ?? 216;
 
     function frame(now, still) {
       if (!ready) return;
@@ -413,33 +456,50 @@ export function createWorld({ canvas, build }) {
       camera.position.copy(camPos);
       camera.position.x += mouse.x * 0.6; camera.position.y += -mouse.y * 0.4;
       camera.lookAt(tgt);
+      const narrow = narrowNow();
+      const fogNear = (narrow ? fog.narrowNear : undefined) ?? fog.near ?? 16;
+      const fogFar = (narrow ? fog.narrowFar : undefined) ?? fog.far ?? 46;
       U.uFogNear.value = fogNear + cw * (finNear - fogNear); U.uFogFar.value = fogFar + cw * (finFar - fogFar);
       formations.forEach((f) => f.update(dt, uCur, cw));
       screens.forEach((s) => s.update(uCur, U.uTime.value));
-      canvas.style.opacity = narrowNow() && uCur > 0.6 ? "0.5" : "1";
+      canvas.style.opacity = narrow && uCur > 0.6 ? "0.5" : "1";
       renderer.render(scene, camera);
     }
     function loop(now) { frame(now, false); raf = requestAnimationFrame(loop); }
+    /* reduced motion has no loop: redraw one still frame when something changes (texture, layout, theme) */
+    let pending = false;
+    function requestRender() {
+      if (!RM || !ready || pending) return;
+      pending = true;
+      requestAnimationFrame(() => { pending = false; frame(performance.now(), true); });
+    }
     function start() { if (!running) { running = true; last = performance.now(); raf = requestAnimationFrame(loop); } }
     function stop() { running = false; cancelAnimationFrame(raf); }
 
-    resize();
+    resize(true);
+    uCur = scrollToU(); // start where the page is (reload mid-page, hash links), not at the hero
     ready = true;
     applyTheme();
-    root.classList.add("has3d");
+    root.classList.remove("no3d");
+    root.classList.add("will3d", "has3d");
 
+    const t0 = performance.now();
+    const relayout = () => {
+      measure();
+      // scroll restoration can land after init: jump there instead of flying through every station
+      if (performance.now() - t0 < 2500) uCur = scrollToU();
+      requestRender();
+    };
     let rt;
-    window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { resize(); if (RM) frame(performance.now(), true); }, 150); });
-    window.addEventListener("load", () => { measure(); if (RM) frame(performance.now(), true); });
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
-    if (window.ResizeObserver) new ResizeObserver(() => measure()).observe(document.body);
+    window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { resize(); requestRender(); }, 150); });
+    window.addEventListener("load", relayout);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
+    if (window.ResizeObserver) new ResizeObserver(relayout).observe(document.body);
 
     if (RM) {
-      // reduced motion: formations fully assembled, no flight; the camera cuts between stations on scroll
-      formations.forEach((f) => { const up = f.update; f.update = (dt, u, cw) => up(dt, u, 1); });
-      const still = () => frame(performance.now(), true);
-      window.addEventListener("scroll", () => requestAnimationFrame(still), { passive: true });
-      still();
+      // reduced motion: no flight; the camera cuts between stations on scroll (see formation.update)
+      window.addEventListener("scroll", requestRender, { passive: true });
+      requestRender();
     } else {
       if (window.matchMedia("(pointer:fine)").matches) {
         window.addEventListener("mousemove", (e) => {
