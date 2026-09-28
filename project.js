@@ -1,6 +1,7 @@
 /* project.js — shared behaviour for the case-study pages.
-   Theme toggle, canvas neural background, scroll reveals, image carousel,
-   light/dark compare slider, scroll progress, magnetic buttons. All reduced-motion-safe. */
+   Theme toggle, scroll reveals, masked heading reveals, hero-title scatter, image carousel,
+   light/dark compare slider, scroll progress, magnetic buttons. All reduced-motion-safe.
+   The 3D world is a separate module: assets/js/world.js + assets/js/scenes/<page>.js */
 (function(){
   "use strict";
   var RM = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -23,74 +24,6 @@
     });
   }
 
-  /* neural-network canvas background (matches the homepage) */
-  function buildBackground(){
-    var host = document.getElementById("bg");
-    var canvas = host && host.querySelector("canvas");
-    if(!canvas || !canvas.getContext) return;
-    var ctx = canvas.getContext("2d"); if(!ctx) return;
-    var DPR = Math.min(window.devicePixelRatio || 1, 2);
-    var W = 1, H = 1, nodes = [], connect = 150, c2 = connect*connect, glow = true, raf = 0, running = false, sY = 0;
-    var palette = pal();
-    function pal(){
-      return document.documentElement.getAttribute("data-theme") === "dark"
-        ? { dot:[168,184,255], line:[120,140,255] } : { dot:[31,52,200], line:[39,64,230] };
-    }
-    function size(){
-      W = host.clientWidth || window.innerWidth; H = host.clientHeight || window.innerHeight;
-      canvas.width = Math.max(1, Math.round(W*DPR)); canvas.height = Math.max(1, Math.round(H*DPR));
-      canvas.style.width = W+"px"; canvas.style.height = H+"px";
-      ctx.setTransform(DPR,0,0,DPR,0,0);
-      connect = W < 700 ? 116 : 150; c2 = connect*connect; glow = W >= 700; seed();
-    }
-    function seed(){
-      var count = Math.max(30, Math.min(W < 700 ? 60 : 104, Math.round((W*H)/15500)));
-      nodes = [];
-      for(var i=0;i<count;i++){
-        var depth = 0.3 + Math.random()*0.85;
-        nodes.push({ x:Math.random()*W, y:Math.random()*H, vx:(Math.random()-0.5)*0.16, vy:(Math.random()-0.5)*0.16,
-          depth:depth, pulse: Math.random()<0.09 ? Math.random()*6.283 : -1 });
-      }
-    }
-    function wrap(v,l){ v%=l; return v<0?v+l:v; }
-    function render(motion){
-      sY = motion ? (window.pageYOffset || document.documentElement.scrollTop || 0) : 0;
-      ctx.clearRect(0,0,W,H);
-      var i,j,n;
-      for(i=0;i<nodes.length;i++){ n=nodes[i];
-        if(motion){ n.x=wrap(n.x+n.vx,W); n.y=wrap(n.y+n.vy,H); }
-        n.px = wrap(n.x, W); n.py = wrap(n.y - sY*0.16*n.depth, H);
-      }
-      var lc=palette.line; ctx.lineWidth=1;
-      for(i=0;i<nodes.length;i++){ var a=nodes[i];
-        for(j=i+1;j<nodes.length;j++){ var b=nodes[j];
-          var dx=a.px-b.px, dy=a.py-b.py; if(dx<-connect||dx>connect||dy<-connect||dy>connect) continue;
-          var d2=dx*dx+dy*dy;
-          if(d2<c2){ var op=(1-Math.sqrt(d2)/connect)*0.5*((a.depth+b.depth)*0.5);
-            ctx.strokeStyle="rgba("+lc[0]+","+lc[1]+","+lc[2]+","+op.toFixed(3)+")";
-            ctx.beginPath(); ctx.moveTo(a.px,a.py); ctx.lineTo(b.px,b.py); ctx.stroke(); } } }
-      var dc=palette.dot, t = motion ? performance.now()*0.001 : 0;
-      for(i=0;i<nodes.length;i++){ n=nodes[i]; var r=1.1+n.depth*1.5, o=0.3+n.depth*0.35;
-        if(motion && n.pulse>=0){ var pp=(Math.sin(t*1.3+n.pulse)+1)*0.5; r+=pp*1.8; o=Math.min(0.95,o+pp*0.4);
-          if(glow){ ctx.shadowColor="rgba("+dc[0]+","+dc[1]+","+dc[2]+",0.85)"; ctx.shadowBlur=8+pp*12; } }
-        else if(glow){ ctx.shadowBlur=0; }
-        ctx.fillStyle="rgba("+dc[0]+","+dc[1]+","+dc[2]+","+o.toFixed(3)+")";
-        ctx.beginPath(); ctx.arc(n.px,n.py,r,0,6.283); ctx.fill(); }
-      if(glow) ctx.shadowBlur=0;
-    }
-    function loop(){ render(true); raf=requestAnimationFrame(loop); }
-    function start(){ if(!running){ running=true; raf=requestAnimationFrame(loop); } }
-    function stop(){ running=false; if(raf){ cancelAnimationFrame(raf); raf=0; } }
-    size();
-    if(RM){ render(false); } else {
-      start();
-      document.addEventListener("visibilitychange", function(){ if(document.hidden) stop(); else start(); });
-    }
-    var rt; window.addEventListener("resize", function(){ clearTimeout(rt); rt=setTimeout(function(){ size(); if(RM) render(false); }, 180); });
-    if(window.MutationObserver){ new MutationObserver(function(){ palette=pal(); if(RM) render(false); })
-      .observe(document.documentElement, { attributes:true, attributeFilter:["data-theme"] }); }
-  }
-
   function reveals(){
     var items = document.querySelectorAll(".reveal");
     if(RM || !("IntersectionObserver" in window)){ items.forEach(function(it){ it.classList.add("in"); }); return; }
@@ -104,6 +37,60 @@
       });
     }, { threshold:0.16, rootMargin:"0px 0px -8% 0px" });
     items.forEach(function(it){ io.observe(it); });
+  }
+
+  /* split headings into masked words */
+  function splitHeads(){
+    Array.prototype.slice.call(document.querySelectorAll(".split")).forEach(function(el){
+      var i = 0;
+      (function walk(node){
+        Array.prototype.slice.call(node.childNodes).forEach(function(c){
+          if(c.nodeType === 3){
+            var frag = document.createDocumentFragment();
+            c.textContent.split(/(\s+)/).forEach(function(part){
+              if(!part) return;
+              if(/^\s+$/.test(part)){ frag.appendChild(document.createTextNode(part)); return; }
+              var w = document.createElement("span"); w.className = "w";
+              var wi = document.createElement("span"); wi.className = "wi";
+              wi.style.setProperty("--i", i++); wi.textContent = part;
+              w.appendChild(wi); frag.appendChild(w);
+            });
+            node.replaceChild(frag, c);
+          } else if(c.nodeType === 1 && c.tagName !== "BR"){ walk(c); }
+        });
+      })(el);
+    });
+  }
+
+  /* hero title: letters scatter in depth as the hero scrolls away */
+  function titleScatter(){
+    var el = document.querySelector(".ptitle"); if(!el) return;
+    var label = el.textContent.trim();
+    el.setAttribute("aria-label", label);
+    el.textContent = "";
+    label.split(" ").forEach(function(word, wi){
+      var w = document.createElement("span"); w.className = "word"; w.setAttribute("aria-hidden", "true");
+      word.split("").forEach(function(ch){
+        var o = document.createElement("span"); o.className = "lw";
+        o.style.setProperty("--dx", ((Math.random() - .5) * 260).toFixed(1));
+        o.style.setProperty("--dy", ((Math.random() - .5) * 180).toFixed(1));
+        o.style.setProperty("--dz", (120 + Math.random() * 520).toFixed(1));
+        o.style.setProperty("--rx", ((Math.random() - .5) * 140).toFixed(1));
+        o.style.setProperty("--ry", ((Math.random() - .5) * 140).toFixed(1));
+        o.textContent = ch; w.appendChild(o);
+      });
+      el.appendChild(w);
+      if(wi < label.split(" ").length - 1) el.appendChild(document.createTextNode(" "));
+    });
+    if(RM) return;
+    var hero = document.querySelector(".phero"), ticking = false;
+    function update(){
+      var h = hero ? hero.offsetHeight : window.innerHeight;
+      var p = Math.min(1, Math.max(0, (window.pageYOffset || 0) / Math.max(1, h * 0.9)));
+      el.style.setProperty("--sp", p.toFixed(3)); ticking = false;
+    }
+    window.addEventListener("scroll", function(){ if(!ticking){ ticking = true; requestAnimationFrame(update); } }, { passive:true });
+    update();
   }
 
   function scrollProgress(){
@@ -202,5 +189,5 @@
     });
   }
 
-  theme(); buildBackground(); reveals(); scrollProgress(); magnetic(); carousel(); compare();
+  theme(); titleScatter(); splitHeads(); reveals(); scrollProgress(); magnetic(); carousel(); compare();
 })();

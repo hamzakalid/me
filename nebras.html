@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<script>(function(){try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<script>(function(){try{document.documentElement.classList.add("js");var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <title>Nebras - Case study | Hamza Salman</title>
 <meta name="description" content="Case study: Nebras, an agentic AI for the Nawras ERP that understands enterprise data through ontology and semantic layers, then acts on it." />
 <meta name="author" content="Hamza Salman" />
@@ -37,7 +37,8 @@
 </svg>
 
 <div class="progress" id="progress"></div>
-<div class="bg" id="bg" aria-hidden="true"><canvas></canvas></div>
+<canvas id="scene3d" aria-hidden="true"></canvas>
+<div class="scrim" aria-hidden="true"></div>
 
 <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark theme">
   <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
@@ -57,8 +58,7 @@
 
 <main class="shell" id="main">
 
-  <header class="wrap phero">
-    <div class="eyebrow reveal">Case study</div>
+  <header class="wrap phero" id="top">
     <h1 class="ptitle reveal">Nebras</h1>
     <p class="plede reveal">An ERP-connected agent that understands enterprise data through ontology and semantic layers, then acts on it.</p>
     <div class="phero__meta reveal">
@@ -87,7 +87,7 @@
     </div>
   </div>
 
-  <section class="wrap section">
+  <section class="wrap section" id="overview">
     <div class="two-col">
       <p class="lead reveal">An agent is only as good as its understanding of the data underneath it.</p>
       <div>
@@ -97,9 +97,8 @@
     </div>
   </section>
 
-  <section class="wrap section">
-    <div class="eyebrow reveal">Capabilities</div>
-    <h2 class="heading-lg reveal">Understanding first, then action.</h2>
+  <section class="wrap section" id="capabilities">
+    <h2 class="heading-lg split reveal">Understanding first, then action.</h2>
     <div class="caps">
       <article class="cap cap--feature reveal">
         <svg class="cap__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-graph"/></svg>
@@ -134,8 +133,8 @@
     </div>
   </section>
 
-  <section class="wrap section">
-    <h2 class="heading-lg reveal">How a task gets done.</h2>
+  <section class="wrap section" id="how">
+    <h2 class="heading-lg split reveal">How a task gets done.</h2>
     <div class="steps">
       <div class="step reveal"><div class="step__n">01</div><h3>Understand</h3><p>Ontology and semantic layers map the request to real enterprise entities.</p></div>
       <div class="step reveal"><div class="step__n">02</div><h3>Plan</h3><p>The agent loop breaks the goal into steps and selects the right skills.</p></div>
@@ -145,8 +144,8 @@
     </div>
   </section>
 
-  <section class="wrap section">
-    <h2 class="heading-lg reveal">A look inside Nebras.</h2>
+  <section class="wrap section" id="gallery">
+    <h2 class="heading-lg split reveal">A look inside Nebras.</h2>
     <div class="gallery reveal" data-gallery aria-roledescription="carousel" aria-label="Nebras gallery">
       <div class="gallery__viewport">
         <div class="gallery__track">
@@ -170,16 +169,16 @@
     </div>
   </section>
 
-  <section class="wrap section">
-    <h2 class="heading-lg reveal">Outcome.</h2>
+  <section class="wrap section" id="outcome">
+    <h2 class="heading-lg split reveal">Outcome.</h2>
     <div class="outcome">
       <div class="metric reveal"><b>Acts autonomously</b><span>Decision-making and task execution on ERP data</span></div>
       <div class="metric reveal"><b>Built on Nawras</b><span>Uses the platform's agent foundation</span></div>
     </div>
   </section>
 
-  <section class="wrap endcta">
-    <h2 class="reveal">Build AI that <span class="hl">acts.</span></h2>
+  <section class="wrap endcta" id="next">
+    <h2 class="split reveal">Build AI that <span class="hl">acts.</span></h2>
     <div class="endcta__row reveal">
       <a class="btn btn-primary" data-magnetic="0.3" href="./index.html#contact">Get in touch <span class="arw">&rarr;</span></a>
       <a class="btn btn-ghost" data-magnetic="0.2" href="./resume.html" target="_blank" rel="noopener">Résumé</a>
@@ -202,5 +201,6 @@
 
 <script>document.getElementById("yr").textContent=new Date().getFullYear();</script>
 <script src="./project.js" defer></script>
+<script type="module" src="./assets/js/scenes/nebras.js"></script>
 </body>
 </html>
