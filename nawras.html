@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<script>(function(){try{document.documentElement.classList.add("js");if(window.WebGLRenderingContext)document.documentElement.classList.add("will3d");document.addEventListener("DOMContentLoaded",function(){setTimeout(function(){if(!window.__projectReady)document.documentElement.classList.remove("js");},2500);});var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<script>(function(){try{document.documentElement.classList.add("js");if(window.WebGLRenderingContext)document.documentElement.classList.add("will3d");addEventListener("load",function(){var c=document.documentElement.classList;if(!c.contains("has3d")){c.remove("will3d");c.add("no3d");}});document.addEventListener("DOMContentLoaded",function(){setTimeout(function(){if(!window.__projectReady)document.documentElement.classList.remove("js");},2500);});var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <title>Nawras AI Platform - Case study | Hamza Salman</title>
 <meta name="description" content="Case study: Nawras AI Platform, a low-code platform for building, grounding, and shipping agentic AI workflows in production." />
 <meta name="author" content="Hamza Salman" />

@@ -75,7 +75,7 @@
         var o = document.createElement("span"); o.className = "lw";
         o.style.setProperty("--dx", ((Math.random() - .5) * 260).toFixed(1));
         o.style.setProperty("--dy", ((Math.random() - .5) * 180).toFixed(1));
-        o.style.setProperty("--dz", (120 + Math.random() * 520).toFixed(1));
+        o.style.setProperty("--dz", (80 + Math.random() * 270).toFixed(1));
         o.style.setProperty("--rx", ((Math.random() - .5) * 140).toFixed(1));
         o.style.setProperty("--ry", ((Math.random() - .5) * 140).toFixed(1));
         o.textContent = ch; w.appendChild(o);
@@ -131,7 +131,10 @@
         d.addEventListener("click", function(){ go(i, true); }); dotsWrap.appendChild(d); return d;
       });
       function clamp(i){ return (i % slides.length + slides.length) % slides.length; }
-      function go(i, user){ index = clamp(i);
+      function atEnd(){ return vp.scrollLeft >= vp.scrollWidth - vp.clientWidth - 2; }
+      function go(i, user){
+        if(i > index && atEnd()) i = 0; // the last slides can't all be centred: wrap once the strip can't move
+        index = clamp(i);
         // scroll the strip only: scrollIntoView would also nudge the page, and page scroll drives the 3D camera
         var sl = slides[index];
         vp.scrollTo({ left: sl.offsetLeft - (vp.clientWidth - sl.offsetWidth) / 2, behavior: RM ? "auto" : "smooth" });
@@ -144,6 +147,7 @@
           if(!RM){ var art=slides[i].firstElementChild; if(art){ var k=Math.min(1,dist/(vp.clientWidth||1));
             art.style.transform="scale("+(1-k*0.14).toFixed(3)+")"; art.style.opacity=(1-k*0.5).toFixed(3); } }
         }
+        if(atEnd()) best = slides.length - 1;
         index=best; for(var j=0;j<dots.length;j++){ dots[j].classList.toggle("active", j===index); } ticking=false;
       }
       function schedule(){ if(!ticking){ ticking=true; requestAnimationFrame(paint); } }

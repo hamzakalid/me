@@ -9,6 +9,8 @@
 (function(){try{
   document.documentElement.classList.add("js");
   if(window.WebGLRenderingContext) document.documentElement.classList.add("will3d");
+  // module scripts run before "load": if the 3D world has not started by then, fall back to the plain layout
+  addEventListener("load",function(){var c=document.documentElement.classList;if(!c.contains("has3d")){c.remove("will3d");c.add("no3d");}});
   var t = localStorage.getItem("theme");
   if(t!=="light" && t!=="dark"){
     t = (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
@@ -179,11 +181,13 @@
   .no3d #scene3d,.no3d .scrim{display:none}
   /* keeps copy legible where it sits over the scene: text lives on the left, the world on the right */
   .scrim{position:fixed;inset:0;z-index:0;pointer-events:none;
-    background:linear-gradient(90deg,var(--scrim) 0%,transparent 64%); /* fallback: no color-mix() */
-    background:linear-gradient(90deg,
+    background:linear-gradient(90deg,var(--scrim) 0%,transparent 64%)}
+  @supports (background:color-mix(in srgb,red 50%,transparent)){
+    .scrim{background:linear-gradient(90deg,
       color-mix(in srgb,var(--frost) 82%,transparent) 0%,
       color-mix(in srgb,var(--frost) 50%,transparent) 36%,
       transparent 64%)}
+  }
 
   /* ---------- layout ---------- */
   .shell{position:relative;z-index:1}
@@ -262,7 +266,7 @@
     margin-bottom:30px}
   .name{perspective:900px}
   .word{display:inline-block;transform-style:preserve-3d}
-  .lw{display:inline-block;will-change:transform;
+  .lw{display:inline-block;will-change:transform,opacity;opacity:calc(1 - var(--sp,0) * 1.3);
     transform:translate3d(calc(var(--dx) * var(--sp,0) * 1px),calc(var(--dy) * var(--sp,0) * 1px),calc(var(--dz) * var(--sp,0) * 1px))
       rotateX(calc(var(--rx) * var(--sp,0) * 1deg)) rotateY(calc(var(--ry) * var(--sp,0) * 1deg))}
   .word:not(:last-child){margin-right:.28em}
@@ -461,19 +465,22 @@
 
   /* ---------- responsive ---------- */
   /* desktop with the 3D world: content keeps the left column, the world owns the right */
-  @media (min-width:1000px){
+  @media (min-width:1000px) and (min-aspect-ratio:1201/1000){
     .will3d .stack,.will3d .works,.will3d .tl,.will3d .crows{max-width:min(720px,60%)}
     .will3d .proj{grid-template-columns:1fr}
     .will3d .proj__aside{border-left:0;padding-left:0;border-top:1px solid var(--line-soft);padding-top:20px}
     .will3d .proj__shot{display:none} /* shown in the world as a floating screen instead */
   }
-  @media (min-width:1000px) and (max-width:1199px){
+  @media (min-width:1000px) and (max-width:1199.98px) and (min-aspect-ratio:1201/1000){
     .will3d .stack,.will3d .works,.will3d .tl,.will3d .crows{max-width:56%}
+    .will3d .srow{grid-template-columns:1fr;gap:12px} /* label above the chips in the narrow column */
   }
   /* below 1000px text spans the full width, so the world sits behind an even veil (matches world.js) */
-  @media (max-width:999px){
-    .scrim{background:var(--scrim);background:color-mix(in srgb,var(--frost) 55%,transparent)}
+  @media (max-width:999.98px), (max-aspect-ratio:6/5){
+    .scrim{background:var(--scrim)}
+    @supports (background:color-mix(in srgb,red 50%,transparent)){.scrim{background:color-mix(in srgb,var(--frost) 55%,transparent)}}
   }
+  @media (max-width:1299.98px){.foot{padding-right:calc(46px + clamp(16px,3vw,28px))}}
   @media (max-width:820px){
     .about__grid{grid-template-columns:1fr}
     .srow{grid-template-columns:1fr;gap:12px}
@@ -766,7 +773,7 @@
         o.className = "lw";
         o.style.setProperty("--dx", ((Math.random() - .5) * 260).toFixed(1));
         o.style.setProperty("--dy", ((Math.random() - .5) * 180).toFixed(1));
-        o.style.setProperty("--dz", (120 + Math.random() * 520).toFixed(1));
+        o.style.setProperty("--dz", (80 + Math.random() * 270).toFixed(1));
         o.style.setProperty("--rx", ((Math.random() - .5) * 140).toFixed(1));
         o.style.setProperty("--ry", ((Math.random() - .5) * 140).toFixed(1));
         var s = document.createElement("span");

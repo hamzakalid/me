@@ -30,14 +30,15 @@ createWorld({
       formation({ center: CORE, nodes, edges, pulseEdges: synapses, stations: [0, 1], spin: V(0, 0.045, 0), scatter: 9, pulses: 28, lineOpacity: 0.2 });
     })();
 
-    /* ---- station 2: four skill rings ---- */
+    /* ---- station 2: four skill rings ----
+       compact 2x2 grid; at rest each ring faces the camera within ~25–45°, so none reads edge-on (reduced motion has no spin) */
     const STACK = V(0, 0, -26);
-    [[-3.1, 2.1, 0.5, 0.2], [3.1, 2.1, -0.4, 0.9], [-3.1, -2.1, 1.1, -0.5], [3.1, -2.1, -1.0, -0.2]].forEach(([x, y, rx, ry], k) => {
-      const nodes = [], edges = [], M = Math.round(170 * D), R = 1.9;
+    [[-2.3, 1.8, 0.45, 0.25], [2.3, 1.8, -0.45, 0.72], [-2.3, -1.8, 0.55, 0.45], [2.3, -1.8, -0.75, -0.35]].forEach(([x, y, rx, ry], k) => {
+      const nodes = [], edges = [], M = Math.round(150 * D), R = 1.5;
       const e = new THREE.Euler(rx, ry, 0);
       for (let i = 0; i < M; i++) {
         const a = (i / M) * Math.PI * 2;
-        nodes.push({ p: V(Math.cos(a) * R + rr(-0.12, 0.12), Math.sin(a) * R + rr(-0.12, 0.12), rr(-0.18, 0.18)).applyEuler(e), s: i % 17 === 0 ? 0.2 : rr(0.05, 0.09) });
+        nodes.push({ p: V(Math.cos(a) * R + rr(-0.1, 0.1), Math.sin(a) * R + rr(-0.1, 0.1), rr(-0.15, 0.15)).applyEuler(e), s: i % 17 === 0 ? 0.2 : rr(0.05, 0.09) });
         edges.push([i, (i + 1) % M]);
         if (i % 9 === 0) edges.push([i, (i + ((M / 3) | 0)) % M]);
       }
@@ -52,8 +53,8 @@ createWorld({
       layers.forEach((cnt, L) => {
         const col = [];
         for (let b = 0; b < cnt; b++) {
-          const cx = (L - (layers.length - 1) / 2) * 1.9, cy = (b - (cnt - 1) / 2) * 1.05, cz = rr(-0.6, 0.6);
-          const bw = 1.0, bh = 0.52, base = nodes.length, per = 14;
+          const cx = (L - (layers.length - 1) / 2) * 1.35, cy = (b - (cnt - 1) / 2) * 0.9, cz = rr(-0.5, 0.5);
+          const bw = 0.8, bh = 0.44, base = nodes.length, per = 14;
           for (let i = 0; i < per; i++) {
             const d = (i / per) * 2 * (bw + bh);
             let x, y;
@@ -76,7 +77,8 @@ createWorld({
           targets.forEach((t) => { flow.push(edges.length); edges.push([b.outP, next[t].inP]); });
         });
       }
-      formation({ center: NAW, nodes, edges, pulseEdges: flow, stations: [3], scatter: 7, pulses: 16, lineOpacity: 0.3 });
+      // low wobble keeps the block outlines rectangular
+      formation({ center: NAW, nodes, edges, pulseEdges: flow, stations: [3], scatter: 7, pulses: 16, lineOpacity: 0.3, wobble: 0.015 });
     })();
 
     /* ---- station 4: Nebras, an ontology of concepts around an agent hub ---- */
@@ -142,16 +144,18 @@ createWorld({
           if (side === 1 && i % 12 === 0) edges.push([i, base + i]);
         }
       }
+      // one hub per role, its ring a gate the rail passes through (perpendicular to the rail, so it reads as a loop from the stations' cameras)
       [0.12, 0.5, 0.88].forEach((t) => {
         const c = railCurve.getPoint(t).sub(center), hub = nodes.length;
+        const T = railCurve.getTangent(t), u = T.clone().cross(V(0, 1, 0)).normalize(), v = u.clone().cross(T).normalize();
         nodes.push({ p: c, s: 0.34 });
         for (let k = 0; k < 28; k++) {
           const a = (k / 28) * Math.PI * 2;
-          nodes.push({ p: c.clone().add(V(0, Math.cos(a) * 0.9, Math.sin(a) * 0.9)), s: 0.06 });
+          nodes.push({ p: c.clone().addScaledVector(u, Math.cos(a) * 0.9).addScaledVector(v, Math.sin(a) * 0.9), s: 0.06 });
           edges.push([hub + 1 + k, hub + 1 + ((k + 1) % 28)]);
         }
       });
-      formation({ center, nodes, edges, pulseEdges: run, stations: [6, 7], scatter: 6, pulses: 20, lineOpacity: 0.26 });
+      formation({ center, nodes, edges, pulseEdges: run, stations: [6, 7], scatter: 6, pulses: 20, lineOpacity: 0.26, wobble: 0.02 });
     })();
 
     /* ---- ambient data dust along the whole route ---- */
@@ -159,16 +163,22 @@ createWorld({
 
     return {
       stations: [
-        { sel: ".hero", F: CORE, cam: V(0, 0.6, 15.5), shift: 0.36 },
+        { sel: ".hero", F: CORE, cam: V(0, 0.6, 18.5), shift: 0.4 },
         { sel: "#about", F: V(0, 0, -7), cam: V(0.5, 0.2, 1.6), shift: 0.18, inside: true },
-        { sel: "#stack", F: STACK, cam: STACK.clone().add(V(4.5, 1.6, 12.5)), shift: 0.32 },
-        { sel: "#work .proj:nth-of-type(1)", F: NAW, cam: NAW.clone().add(V(5, 2, 11.5)), shift: 0.3 },
+        { sel: "#stack", F: STACK, cam: STACK.clone().add(V(6.4, 2.1, 19.2)), shift: 0.35 },
+        { sel: "#work .proj:nth-of-type(1)", F: NAW, cam: NAW.clone().add(V(4.2, 2.2, 18.2)), shift: 0.345 },
         { sel: "#work .proj:nth-of-type(2)", F: NEB, cam: NEB.clone().add(V(-4, 1.2, 11.5)), shift: 0.3 },
         { sel: "#work .proj:nth-of-type(3)", F: BI, cam: BI.clone().add(V(5, 3.5, 11)), shift: 0.3 },
-        { sel: "#path .tl-item:first-of-type", F: railCurve.getPoint(0.18), cam: railCurve.getPoint(0.02).add(V(0, 3, 8)), shift: 0.25 },
-        { sel: "#path .tl-item:last-of-type", F: railCurve.getPoint(0.86), cam: railCurve.getPoint(0.68).add(V(0, 3, 8)), shift: 0.25 },
-        { sel: "#contact", F: V(0, 0, -56), cam: V(44, 42, 46), shift: 0.33 },
+        // the rail is seen from behind its start, so it recedes up and to the right, away from the timeline column
+        { sel: "#path .tl-item:first-of-type", F: railCurve.getPoint(0.2), cam: railCurve.getPoint(0.2).add(V(-7.8, 3.3, 13.6)), shift: 0.44 },
+        // further along and up: the end hub ahead, the earlier rail sweeping in from below (clear of the contact headline)
+        { sel: "#path .tl-item:last-of-type", F: railCurve.getPoint(0.84), cam: railCurve.getPoint(0.84).add(V(-9.6, 5.6, 14.2)), shift: 0.44 },
+        // finale: the whole route as miniatures, lifted clear of the footer and kept right of the contact rows
+        // (narrowScale < 1: on narrow screens the route is centred behind the veil and can come closer)
+        { sel: "#contact", F: V(0, -10, -56), cam: V(25.4, 55.6, 104.3), shift: 0.5, narrowScale: 0.9 },
       ],
+      // the finale camera sits further out, so its fog starts later (the far end of the rail stays faintly visible)
+      fog: { finaleNear: 130, finaleFar: 290 },
     };
   },
 });

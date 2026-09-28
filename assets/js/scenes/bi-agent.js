@@ -146,14 +146,14 @@ createWorld({
     (function overview() {
       const g = G(), flow = [];
       // the question: a speech bubble with a typing indicator; the query leaves from its hot node
-      const BC = V(-3.0, 0.75, 0.3);
+      const BC = V(-2.5, 0.75, 0.3);
       const bub = outline(g, roundRect(0.7, 0.44, 0.18).map(move(BC)), () => rr(0.05, 0.065), { closed: true, step: 0.11, ds: () => rr(0.035, 0.05) });
       outline(g, [V(-0.34, -0.44, 0), V(-0.58, -0.86, 0), V(-0.04, -0.44, 0)].map(move(BC)), 0.05, { step: 0.11, ds: 0.04 });
       [-0.26, 0, 0.26].forEach((x) => add(g, V(x, 0, 0).add(BC), 0.15));
       const Q = add(g, BC.clone().add(V(1.05, -0.05, 0)), 0.32);
       link(g, bub, Q); link(g, bub + 11, Q); // both ends of the bubble's right-hand side
       // the semantic layer: an orderly lattice the question passes through
-      const NX = 4, NY = 5, NZ = 4, sp = 0.56, LC = V(0.1, 0.05, 0), L0 = g.nodes.length;
+      const NX = 4, NY = 5, NZ = 4, sp = 0.5, LC = V(0.1, 0.05, 0), L0 = g.nodes.length;
       const L = (i, j, k) => L0 + (i * NY + j) * NZ + k;
       for (let i = 0; i < NX; i++) for (let j = 0; j < NY; j++) for (let k = 0; k < NZ; k++)
         add(g, V((i - (NX - 1) / 2) * sp, (j - (NY - 1) / 2) * sp, (k - (NZ - 1) / 2) * sp).add(LC), rnd() < 0.1 ? 0.18 : rr(0.05, 0.08));
@@ -163,7 +163,7 @@ createWorld({
         if (k < NZ - 1) link(g, L(i, j, k), L(i, j, k + 1));
       }
       // the database: rings of points stacked into a cylinder, three bands like the icon
-      const DC = V(2.85, -0.3, 0), R = 0.9, H = 2.2, RINGS = 7, NV = 12, FILL = D < 1 ? 2 : 3;
+      const DC = V(2.35, -0.3, 0), R = 0.9, H = 2.2, RINGS = 7, NV = 12, FILL = D < 1 ? 2 : 3;
       const rings = [];
       for (let r = 0; r < RINGS; r++) {
         const y = H / 2 - (r * H) / (RINGS - 1), band = r % 2 === 0;
@@ -447,21 +447,25 @@ createWorld({
     } });
 
     const F3 = RC.getPoint(MK[0]).add(V(0, 1.5, 0)), F4 = RC.getPoint(MK[4]).add(V(0, 1.5, 0));
-    return {
-      stations: [
-        { sel: ".phero", F: HERO.clone().add(V(0, -0.2, 0)), cam: HERO.clone().add(V(5.6, 5.8, 22.2)), shift: 0.4, narrowScale: 1.3 },
-        { sel: "#overview", F: OV, cam: OV.clone().add(V(4.2, 4.2, 18.5)), shift: 0.39, narrowScale: 1.1 },
-        { sel: "#capabilities", F: CAP, cam: CAP.clone().add(V(-2.8, 11.3, 16.7)), shift: 0.39, narrowScale: 1.3 },
-        { sel: "#how .step:first-child", F: F3, cam: F3.clone().add(RIDE), shift: 0.34 },
-        // look a little higher than the last stage: it centres vertically and the near rail drops out of frame
-        { sel: "#how .step:last-child", F: F4.clone().add(V(0, 1.0, 0)), cam: F4.clone().add(RIDE), shift: 0.44 },
-        { sel: "#gallery", F: GAL, cam: GAL.clone().add(V(4.5, 1.5, 16.5)), shift: 0.4, narrowScale: 1.1 },
-        { sel: "#outcome", F: OUT.clone().add(V(-0.2, 0, 0)), cam: OUT.clone().add(V(-2.8, 2.8, 18)), shift: 0.4, narrowScale: 1.1 },
-        { sel: "#next", F: V(4, -30, -60), cam: V(4, 36, 46), shift: 0.43, narrowScale: 1 },
-      ],
-      // every formation's own camera is within ~27 units of it (~35 on phones, where cameras pull back);
-      // fade anything further so far stations don't ghost through the text column
-      fog: { near: 21, far: 37, narrowNear: 30, narrowFar: 48, finaleNear: 150, finaleFar: 320 },
-    };
+    /* a formation shot: `off` is the camera offset from F as framed at ~16:10, where each formation takes about
+       30% of the screen width, inside the free area right of the text column */
+    const shot = (sel, F, off, o) => ({ sel, F, off, cam: F.clone().add(off), ...o });
+    const stations = [
+      shot(".phero", HERO.clone().add(V(0, -0.2, 0)), V(5.6, 5.8, 22.2), { shift: 0.4, narrowScale: 1.3 }),
+      // a near-frontal view: a big sideways offset brings the database end much closer and wider on screen
+      shot("#overview", OV, V(2.6, 4.4, 20.5), { shift: 0.4, narrowScale: 1.0 }),
+      shot("#capabilities", CAP, V(-2.8, 11.3, 16.7), { shift: 0.39, narrowScale: 1.3 }),
+      { sel: "#how .step:first-child", F: F3, cam: F3.clone().add(RIDE), shift: 0.34 },
+      // look a little higher than the last stage: it centres vertically and the near rail drops out of frame
+      { sel: "#how .step:last-child", F: F4.clone().add(V(0, 1.0, 0)), cam: F4.clone().add(RIDE), shift: 0.44 },
+      shot("#gallery", GAL, V(4.7, 1.6, 18.3), { shift: 0.415, narrowScale: 1.0 }),
+      shot("#outcome", OUT.clone().add(V(-0.2, 0, 0)), V(-2.8, 2.8, 18), { shift: 0.4, narrowScale: 1.1 }),
+      { sel: "#next", F: V(4, -30, -60), cam: V(4, 36, 46), shift: 0.43, narrowScale: 1 },
+    ];
+    // every formation's own camera is within ~27 units of it (~35 on phones, where cameras pull back);
+    // fade anything further so far stations don't ghost through the text column
+    // squarer desktop screens need no special casing: the engine widens its field of view to keep 16:10 framing
+    const fog = { near: 21, far: 37, narrowNear: 30, narrowFar: 48, finaleNear: 150, finaleFar: 320 };
+    return { stations, fog };
   },
 });

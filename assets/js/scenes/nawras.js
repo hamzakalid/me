@@ -47,10 +47,12 @@ createWorld({
     const FLOW = V(2, 0, 0);
     (function workflow() {
       const g = { nodes: [], edges: [] }, flow = [];
-      // the canvas' dot grid behind the blocks
+      // the canvas' dot grid behind the blocks: no wider than the block layers, nudged right so it sits centred under
+      // them from the camera's left-hand view (keep the dot count: every later formation's shape comes from the
+      // same seeded random sequence)
       const gx = Math.round(23 * Math.sqrt(D)), gy = Math.round(13 * Math.sqrt(D));
       for (let i = 0; i < gx; i++) for (let j = 0; j < gy; j++)
-        add(g, V((i / (gx - 1) - 0.5) * 7.6, (j / (gy - 1) - 0.5) * 5.0, -1.15), rr(0.045, 0.06));
+        add(g, V((i / (gx - 1) - 0.5) * 6.8 + 0.3, (j / (gy - 1) - 0.5) * 5.0, -1.15), rr(0.045, 0.06));
       const layers = [2, 3, 4, 5, 4, 3, 2], LX = 1.0, BY = 0.9, bw = 0.8, bh = 0.44;
       const outline = resample(rect(bw / 2, bh / 2), 18, true);
       const blocks = layers.map((cnt, L) => {
@@ -352,21 +354,23 @@ createWorld({
     } });
 
     /* phones: the canvas sits behind the card stacks, so where a section leaves an empty band below its cards
-       (gallery, outcome), raise the camera and its target together so the formation drops into that band */
-    // on narrow screens drop these formations into the empty band below their card stacks (applied live on resize)
+       (gallery, outcome), raise the camera and its target together so the formation drops into that band
+       (narrowOffset, applied live on resize) */
     const nudge = (st, dy) => ({ ...st, narrowOffset: V(0, dy, 0) });
-    return {
-      stations: [
-        { sel: ".phero", F: FLOW, cam: FLOW.clone().add(V(-4.8, 3.4, 16.6)), shift: 0.41, narrowScale: 1.1 },
-        { sel: "#overview", F: GAP, cam: GAP.clone().add(V(-1.5, -0.8, 15)), shift: 0.38, narrowScale: 1.1 },
-        { sel: "#capabilities", F: CAP, cam: CAP.clone().add(V(4, 1.8, 15)), shift: 0.4, narrowScale: 1.1 },
-        { sel: "#how .step:first-child", F: F3, cam: CAM3, shift: 0.34, narrowScale: 1.15 },
-        { sel: "#how .step:last-child", F: F4, cam: CAM4, shift: 0.36, narrowScale: 1.15 },
-        nudge({ sel: "#gallery", F: EVAL.clone().add(V(0.35, 0.3, 0)), cam: EVAL.clone().add(V(-1.2, 1.4, 14.5)), shift: 0.41, narrowScale: 1.1 }, 6),
-        nudge({ sel: "#outcome", F: REUSE, cam: REUSE.clone().add(V(4.8, 4.5, 15)), shift: 0.38, narrowScale: 1.1 }, 6.4),
-        { sel: "#next", F: V(0, -10, -66), cam: V(10, 24, 50), shift: 0.42, narrowScale: 1 },
-      ],
-      fog: { finaleNear: 110, finaleFar: 250 },
-    };
+    /* desktop: the hero, overview and gallery sit a little further back so they clear the text column and the right
+       edge; their narrowScale divides that out so phones and tablets keep their framing */
+    const stations = [
+      { sel: ".phero", F: FLOW, cam: FLOW.clone().add(V(-4.8, 3.4, 16.6).multiplyScalar(1.05)), shift: 0.41, narrowScale: 1.1 / 1.05 },
+      { sel: "#overview", F: GAP.clone().add(V(-0.2, 0, 0)), cam: GAP.clone().add(V(-1.5, -0.8, 15).multiplyScalar(1.14)), shift: 0.38, narrowScale: 1.1 / 1.14 },
+      { sel: "#capabilities", F: CAP, cam: CAP.clone().add(V(4, 1.8, 15)), shift: 0.4, narrowScale: 1.1 },
+      { sel: "#how .step:first-child", F: F3, cam: CAM3.clone(), shift: 0.34, narrowScale: 1.15 },
+      { sel: "#how .step:last-child", F: F4, cam: CAM4.clone(), shift: 0.36, narrowScale: 1.15 },
+      nudge({ sel: "#gallery", F: EVAL.clone().add(V(0.35, 0.3, 0)), cam: EVAL.clone().add(V(-1.2, 1.4, 14.5).multiplyScalar(1.04)), shift: 0.41, narrowScale: 1.1 / 1.04 }, 6),
+      nudge({ sel: "#outcome", F: REUSE, cam: REUSE.clone().add(V(4.8, 4.5, 15)), shift: 0.38, narrowScale: 1.1 }, 6.4),
+      { sel: "#next", F: V(0, -10, -66), cam: V(10, 24, 50), shift: 0.42, narrowScale: 1 },
+    ];
+    // squarer desktop screens need no special casing: the engine widens its field of view to keep 16:10 framing
+    const fog = { finaleNear: 110, finaleFar: 250 };
+    return { stations, fog };
   },
 });

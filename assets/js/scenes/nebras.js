@@ -369,7 +369,8 @@ createWorld({
 
     return {
       stations: [
-        { sel: ".phero", F: ONT, cam: V(0, 0.8, 20), shift: 0.34 },
+        // below 1000px the compare slider follows the hero copy; lift the ontology behind the title and lede
+        { sel: ".phero", F: ONT, cam: V(0, 0.8, 20), shift: 0.34, narrowOffset: V(0, -4.5, 0) },
         { sel: "#overview", F: V(-0.5, -0.2, -7), cam: V(-1.5, 1.6, 2), shift: 0.12, inside: true },
         { sel: "#capabilities", F: CAPS, cam: CAPS.clone().add(V(2.5, 1.4, 17.5)), shift: 0.38 },
         { sel: "#how .step:first-child", F: tgtHow0, cam: camHow0, shift: 0.35 },

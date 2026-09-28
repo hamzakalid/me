@@ -14,8 +14,9 @@
        F     world point the camera looks at (the formation's centre)
        cam   camera position
        shift fraction of the camera distance to slide the view target left, so F sits in the right
-             half of the screen on desktop (text lives on the left); scaled down on portrait-ish aspect
-             ratios and ignored on narrow screens (< 1000px, where text spans the full width)
+             half of the screen on desktop (text lives on the left); ignored on narrow screens (< 1000px
+             or aspect <= 6:5, where text spans the full width). Shots are framed at 16:10; on squarer
+             desktop screens the engine widens the field of view so each keeps the same share of the width
        inside       true for a shot from within a formation (not pulled back on narrow screens)
        narrowScale  how far to pull the camera back on narrow screens (default 1.3)
        narrowOffset Vector3 added to F and cam on narrow screens (e.g. drop a formation below a card stack)
@@ -67,8 +68,9 @@ export function createWorld({ canvas, build }) {
       const u = rnd() * 2 - 1, th = rnd() * Math.PI * 2, s = Math.sqrt(1 - u * u);
       return V(Math.cos(th) * s, u, Math.sin(th) * s);
     }
-    // one breakpoint for layout-dependent behaviour: below 1000px the text spans the full width (see the CSS)
-    const narrowNow = () => window.innerWidth < 1000;
+    // one breakpoint for layout-dependent behaviour, mirrored by the CSS: below 1000px, or on screens no wider than
+    // 6:5 (portrait tablets), the text spans the full width and the world sits centred behind a veil
+    const narrowNow = () => window.innerWidth < 1000 || window.innerWidth / Math.max(1, window.innerHeight) <= 1.2;
 
     /* ---------------- renderer / camera ---------------- */
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance", ...CTX });
@@ -329,14 +331,19 @@ export function createWorld({ canvas, build }) {
           renderer.initTexture(t); // upload now, not on the first visible frame
           if (variant() === which) { m.map = t; m.needsUpdate = true; }
           requestRender();
-        }, undefined, () => { delete tex[which]; console.warn("world: could not load screen image", src); });
+        }, undefined, () => { delete tex[which]; s.failed(); console.warn("world: could not load screen image", src); });
       }
+      let retryAt = 0, attempts = 0;
       const s = { mesh, m, frame, stations, face: face ?? stations[0], tilt, bob, baseY: center.y, phase: rnd() * 6.28,
         themed() { if (wanted) load(); },
+        failed() { attempts++; retryAt = performance.now() + 3000 * attempts; },
         update(u, time) {
           let a = 0;
-          for (const st of stations) a = Math.max(a, 1 - smooth(0.4, 1.3, Math.abs(u - st)));
+          // screens arrive with the camera (tighter than formations) so they never sweep across the text column
+          if (RM) { for (const st of stations) if (Math.abs(u - st) < 0.5) a = 1; }
+          else for (const st of stations) a = Math.max(a, 1 - smooth(0.3, 0.9, Math.abs(u - st)));
           if (!wanted) { for (const st of stations) if (Math.abs(u - st) < 2.5) wanted = true; if (wanted) load(); }
+          else if (tex[variant()] === undefined && attempts > 0 && attempts < 4 && performance.now() > retryAt) load();
           mesh.visible = a > 0.003;
           m.opacity = m.map ? a * 0.94 : 0; frame.material.opacity = a * 0.5;
           if (bob) mesh.position.y = s.baseY + Math.sin(time * 0.6 + s.phase) * 0.12;
@@ -362,8 +369,6 @@ export function createWorld({ canvas, build }) {
       const narrow = narrowNow();
       const up = V(0, 1, 0);
       const cams = [], tgts = [];
-      // shift values are tuned at ~16:10; on squarer screens the same shift would push F off the right edge
-      const aspectK = Math.min(1, camera.aspect / 1.6);
       stations.forEach((s) => {
         const F = s.F.clone();
         let cam = s.cam.clone();
@@ -371,7 +376,7 @@ export function createWorld({ canvas, build }) {
         if (narrow && !s.inside) cam = F.clone().add(cam.clone().sub(F).multiplyScalar(s.narrowScale || 1.3));
         const dir = F.clone().sub(cam), dist = dir.length(); dir.normalize();
         const right = dir.clone().cross(up).normalize();
-        const tgt = F.clone().addScaledVector(right, -(narrow ? 0 : (s.shift || 0) * aspectK) * dist);
+        const tgt = F.clone().addScaledVector(right, -(narrow ? 0 : s.shift || 0) * dist);
         cams.push(cam); tgts.push(tgt);
       });
       camCurve = new THREE.CatmullRomCurve3(cams, false, "centripetal");
@@ -421,17 +426,22 @@ export function createWorld({ canvas, build }) {
     new MutationObserver(applyTheme).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
 
     /* ---------------- sizing ---------------- */
-    let lastW = 0, lastH = 0;
+    let lastW = 0, lastH = 0, lastDpr = 0;
+    const coarse = window.matchMedia && window.matchMedia("(pointer:coarse)").matches;
     function resize(force) {
-      const w = window.innerWidth, h = window.innerHeight;
-      // mobile browsers resize the viewport as the URL bar shows/hides; don't rebuild the scene for that
-      if (!force && w === lastW && Math.abs(h - lastH) < 120) { measure(); return; }
-      lastW = w; lastH = h;
-      const pr = Math.min(window.devicePixelRatio || 1, w < 760 ? 1.5 : 1.75);
+      const w = window.innerWidth, h = window.innerHeight, dpr = window.devicePixelRatio || 1;
+      // touch browsers resize the viewport as the URL bar shows/hides; don't rebuild the scene for that
+      if (!force && coarse && w === lastW && dpr === lastDpr && Math.abs(h - lastH) < 120) { measure(); return; }
+      lastW = w; lastH = h; lastDpr = dpr;
+      const pr = Math.min(dpr, w < 760 ? 1.5 : 1.75);
       renderer.setPixelRatio(pr);
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
-      camera.fov = w < 760 ? 58 : 45;
+      // shots are framed at 16:10; on squarer desktop screens widen the view so the horizontal framing (and so
+      // each formation's share of the free right-hand area) stays the same instead of overflowing it
+      const narrow = narrowNow(), base = narrow ? 58 : 45;
+      const k = narrow ? 1 : Math.max(1, 1.6 / camera.aspect);
+      camera.fov = (2 * Math.atan(Math.tan((base * Math.PI) / 360) * k) * 180) / Math.PI;
       camera.updateProjectionMatrix();
       U.uScale.value = (h * pr) / (2 * Math.tan((camera.fov * Math.PI) / 360));
       buildRoute(); measure();
@@ -445,10 +455,11 @@ export function createWorld({ canvas, build }) {
 
     function frame(now, still) {
       if (!ready) return;
-      const dt = still ? 0 : Math.min(0.05, (now - last) / 1000); last = now;
+      // rAF timestamps can precede performance.now() taken just before: never let dt go negative
+      const dt = still ? 0 : clamp((now - last) / 1000, 0, 0.05); last = now;
       if (!still) U.uTime.value += dt;
       const uT = scrollToU();
-      uCur = still ? Math.round(uT) : uCur + (uT - uCur) * (1 - Math.exp(-dt * 2.6));
+      uCur = clamp(still ? Math.round(uT) : uCur + (uT - uCur) * (1 - Math.exp(-dt * 2.6)), 0, N - 1);
       const cw = finale ? smooth(N - 1.7, N - 1, uCur) : 0;
       const t = uCur / (N - 1);
       camCurve.getPoint(t, camPos); tgtCurve.getPoint(t, tgt);
@@ -465,7 +476,11 @@ export function createWorld({ canvas, build }) {
       canvas.style.opacity = narrow && uCur > 0.6 ? "0.5" : "1";
       renderer.render(scene, camera);
     }
-    function loop(now) { frame(now, false); raf = requestAnimationFrame(loop); }
+    let warned = false;
+    function loop(now) {
+      raf = requestAnimationFrame(loop); // schedule first: one bad frame must not stop rendering for good
+      try { frame(now, false); } catch (e) { if (!warned) { warned = true; console.error(e); } }
+    }
     /* reduced motion has no loop: redraw one still frame when something changes (texture, layout, theme) */
     let pending = false;
     function requestRender() {
@@ -483,13 +498,14 @@ export function createWorld({ canvas, build }) {
     root.classList.remove("no3d");
     root.classList.add("will3d", "has3d");
 
-    const t0 = performance.now();
-    const relayout = () => {
-      measure();
-      // scroll restoration can land after init: jump there instead of flying through every station
-      if (performance.now() - t0 < 2500) uCur = scrollToU();
-      requestRender();
-    };
+    /* until the visitor scrolls on purpose, keep the camera parked wherever the page is (scroll restoration and
+       hash links land after init): jump there instead of flying through every station */
+    let userScrolled = false;
+    const mark = () => { userScrolled = true; };
+    ["wheel", "touchstart", "pointerdown", "keydown"].forEach((ev) => window.addEventListener(ev, mark, { passive: true, once: true }));
+    const park = () => { if (!userScrolled) uCur = scrollToU(); };
+    window.addEventListener("scroll", park, { passive: true });
+    const relayout = () => { measure(); park(); requestRender(); };
     let rt;
     window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { resize(); requestRender(); }, 150); });
     window.addEventListener("load", relayout);
