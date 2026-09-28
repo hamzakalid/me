@@ -353,21 +353,28 @@ createWorld({
       return V(0, 0, 0);
     } });
 
-    /* phones: the canvas sits behind the card stacks, so where a section leaves an empty band below its cards
-       (gallery, outcome), raise the camera and its target together so the formation drops into that band
-       (narrowOffset, applied live on resize) */
+    /* narrow screens (phones and portrait tablets, both at a 58 deg view): the canvas sits behind the text, so where a
+       section leaves an empty band, move the camera and its target together so the formation lands in it
+       (narrowOffset, applied live on resize; +y drops the formation down the screen, -y lifts it):
+         hero     a little lower, under the buttons rather than behind them
+         overview below the two paragraphs
+         trace    the monitor below step 05's text
+         gallery  below the slider;  outcome  below the two cards
+       not the finale: the route spans ~120 units of depth, so moving its camera down to lift it on screen flattens
+       it edge-on; it only pulls back a little so the workflow grid clears the link cards */
     const nudge = (st, dy) => ({ ...st, narrowOffset: V(0, dy, 0) });
-    /* desktop: the hero, overview and gallery sit a little further back so they clear the text column and the right
-       edge; their narrowScale divides that out so phones and tablets keep their framing */
+    /* desktop: the text column ends at 65% of the width at 1200px (62.5% at 1440px), so the formations beside it sit a
+       touch right of centre and a little further back to keep a gap to the column and to the right edge; each
+       narrowScale divides the extra distance out so phones and tablets keep their framing */
     const stations = [
-      { sel: ".phero", F: FLOW, cam: FLOW.clone().add(V(-4.8, 3.4, 16.6).multiplyScalar(1.05)), shift: 0.41, narrowScale: 1.1 / 1.05 },
-      { sel: "#overview", F: GAP.clone().add(V(-0.2, 0, 0)), cam: GAP.clone().add(V(-1.5, -0.8, 15).multiplyScalar(1.14)), shift: 0.38, narrowScale: 1.1 / 1.14 },
-      { sel: "#capabilities", F: CAP, cam: CAP.clone().add(V(4, 1.8, 15)), shift: 0.4, narrowScale: 1.1 },
+      nudge({ sel: ".phero", F: FLOW, cam: FLOW.clone().add(V(-4.8, 3.4, 16.6).multiplyScalar(1.09)), shift: 0.425, narrowScale: 1.1 / 1.09 }, 1.55),
+      nudge({ sel: "#overview", F: GAP.clone().add(V(-0.2, 0, 0)), cam: GAP.clone().add(V(-1.5, -0.8, 15).multiplyScalar(1.19)), shift: 0.4, narrowScale: 1.1 / 1.19 }, 6.8),
+      { sel: "#capabilities", F: CAP, cam: CAP.clone().add(V(4, 1.8, 15).multiplyScalar(1.04)), shift: 0.44, narrowScale: 1.1 / 1.04 },
       { sel: "#how .step:first-child", F: F3, cam: CAM3.clone(), shift: 0.34, narrowScale: 1.15 },
-      { sel: "#how .step:last-child", F: F4, cam: CAM4.clone(), shift: 0.36, narrowScale: 1.15 },
-      nudge({ sel: "#gallery", F: EVAL.clone().add(V(0.35, 0.3, 0)), cam: EVAL.clone().add(V(-1.2, 1.4, 14.5).multiplyScalar(1.04)), shift: 0.41, narrowScale: 1.1 / 1.04 }, 6),
-      nudge({ sel: "#outcome", F: REUSE, cam: REUSE.clone().add(V(4.8, 4.5, 15)), shift: 0.38, narrowScale: 1.1 }, 6.4),
-      { sel: "#next", F: V(0, -10, -66), cam: V(10, 24, 50), shift: 0.42, narrowScale: 1 },
+      nudge({ sel: "#how .step:last-child", F: F4, cam: CAM4.clone(), shift: 0.36, narrowScale: 1.15 }, 3),
+      nudge({ sel: "#gallery", F: EVAL.clone().add(V(0.35, 0.3, 0)), cam: EVAL.clone().add(V(-1.2, 1.4, 14.5).multiplyScalar(1.07)), shift: 0.44, narrowScale: 1.1 / 1.07 }, 6.4),
+      nudge({ sel: "#outcome", F: REUSE, cam: REUSE.clone().add(V(4.8, 4.5, 15).multiplyScalar(1.03)), shift: 0.4, narrowScale: 1.1 / 1.03 }, 7.3),
+      { sel: "#next", F: V(0, -10, -66), cam: V(10, 24, 50), shift: 0.42, narrowScale: 1.1 },
     ];
     // squarer desktop screens need no special casing: the engine widens its field of view to keep 16:10 framing
     const fog = { finaleNear: 110, finaleFar: 250 };

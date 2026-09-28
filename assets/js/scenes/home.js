@@ -87,12 +87,12 @@ createWorld({
       const nodes = [{ p: V(0, 0, 0), s: 0.34 }], edges = [], links = [];
       const C = 7, concepts = [];
       for (let c = 0; c < C; c++) {
-        const d = randDir().multiplyScalar(rr(2.6, 3.3));
+        const d = randDir().multiplyScalar(rr(2.2, 2.8));
         concepts.push(nodes.length); nodes.push({ p: d, s: 0.24 });
         links.push(edges.length); edges.push([0, nodes.length - 1]);
         const ci = nodes.length - 1, L = Math.round(34 * D);
         for (let l = 0; l < L; l++) {
-          nodes.push({ p: d.clone().add(randDir().multiplyScalar(rr(0.35, 1.2))), s: rr(0.045, 0.08) });
+          nodes.push({ p: d.clone().add(randDir().multiplyScalar(rr(0.3, 1.0))), s: rr(0.045, 0.08) });
           const e = edges.length; edges.push([ci, nodes.length - 1]); if (l % 3 === 0) links.push(e);
         }
       }
@@ -100,7 +100,7 @@ createWorld({
       formation({ center: NEB, nodes, edges, pulseEdges: links, stations: [4], spin: V(0, -0.06, 0), scatter: 7, pulses: 22, lineOpacity: 0.24 });
     })();
     screen({ src: { light: "./assets/Nebras/nebras-chat.light.png", dark: "./assets/Nebras/nebras-chat.dark.png" },
-      center: NEB.clone().add(V(2.2, -2.9, -2.2)), width: 5.6, stations: [4] });
+      center: NEB.clone().add(V(1.3, -2.9, -2.2)), width: 5.6, stations: [4] });
 
     /* ---- station 5: BI Agent, a 3D bar chart on a data grid ---- */
     const BI = V(8, -1, -80);
@@ -163,22 +163,25 @@ createWorld({
 
     return {
       stations: [
-        { sel: ".hero", F: CORE, cam: V(0, 0.6, 18.5), shift: 0.4 },
+        // narrow: the core rides up behind the name and role, clear of the hero buttons
+        { sel: ".hero", F: CORE, cam: V(0, 0.6, 18.5), shift: 0.4, narrowOffset: V(0, -2.7, 0) },
         { sel: "#about", F: V(0, 0, -7), cam: V(0.5, 0.2, 1.6), shift: 0.18, inside: true },
         { sel: "#stack", F: STACK, cam: STACK.clone().add(V(6.4, 2.1, 19.2)), shift: 0.35 },
         { sel: "#work .proj:nth-of-type(1)", F: NAW, cam: NAW.clone().add(V(4.2, 2.2, 18.2)), shift: 0.345 },
-        { sel: "#work .proj:nth-of-type(2)", F: NEB, cam: NEB.clone().add(V(-4, 1.2, 11.5)), shift: 0.3 },
-        { sel: "#work .proj:nth-of-type(3)", F: BI, cam: BI.clone().add(V(5, 3.5, 11)), shift: 0.3 },
+        // Nebras and BI are pulled back and pushed right so they stay clear of the 56–60% text column
+        { sel: "#work .proj:nth-of-type(2)", F: NEB, cam: NEB.clone().add(V(-4.6, 1.4, 13.2)), shift: 0.36 },
+        { sel: "#work .proj:nth-of-type(3)", F: BI, cam: BI.clone().add(V(6.2, 4.3, 13.6)), shift: 0.36 },
         // the rail is seen from behind its start, so it recedes up and to the right, away from the timeline column
         { sel: "#path .tl-item:first-of-type", F: railCurve.getPoint(0.2), cam: railCurve.getPoint(0.2).add(V(-7.8, 3.3, 13.6)), shift: 0.44 },
         // further along and up: the end hub ahead, the earlier rail sweeping in from below (clear of the contact headline)
         { sel: "#path .tl-item:last-of-type", F: railCurve.getPoint(0.84), cam: railCurve.getPoint(0.84).add(V(-9.6, 5.6, 14.2)), shift: 0.44 },
         // finale: the whole route as miniatures, lifted clear of the footer and kept right of the contact rows
-        // (narrowScale < 1: on narrow screens the route is centred behind the veil and can come closer)
-        { sel: "#contact", F: V(0, -10, -56), cam: V(25.4, 55.6, 104.3), shift: 0.5, narrowScale: 0.9 },
+        // (narrow: the route comes closer, centred, the core dropping into the open band below the contact rows)
+        { sel: "#contact", F: V(0, -10, -56), cam: V(25.4, 55.6, 104.3), shift: 0.5, narrowScale: 0.75, narrowOffset: V(-5, 7, 0) },
       ],
       // the finale camera sits further out, so its fog starts later (the far end of the rail stays faintly visible)
-      fog: { finaleNear: 130, finaleFar: 290 },
+      // narrow screens pull cameras back (narrowScale), so their fog starts later too
+      fog: { narrowNear: 22, narrowFar: 58, finaleNear: 130, finaleFar: 290 },
     };
   },
 });

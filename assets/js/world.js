@@ -68,9 +68,10 @@ export function createWorld({ canvas, build }) {
       const u = rnd() * 2 - 1, th = rnd() * Math.PI * 2, s = Math.sqrt(1 - u * u);
       return V(Math.cos(th) * s, u, Math.sin(th) * s);
     }
-    // one breakpoint for layout-dependent behaviour, mirrored by the CSS: below 1000px, or on screens no wider than
-    // 6:5 (portrait tablets), the text spans the full width and the world sits centred behind a veil
-    const narrowNow = () => window.innerWidth < 1000 || window.innerWidth / Math.max(1, window.innerHeight) <= 1.2;
+    // one breakpoint for layout-dependent behaviour, read from the very media query the CSS uses: below 1000px, or on
+    // screens no wider than 6:5 (portrait tablets), the text spans the full width and the world sits centred behind a veil
+    const DESK = window.matchMedia("(min-width:1000px) and (min-aspect-ratio:1201/1000)");
+    const narrowNow = () => !DESK.matches;
 
     /* ---------------- renderer / camera ---------------- */
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance", ...CTX });
@@ -426,13 +427,14 @@ export function createWorld({ canvas, build }) {
     new MutationObserver(applyTheme).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
 
     /* ---------------- sizing ---------------- */
-    let lastW = 0, lastH = 0, lastDpr = 0;
+    let lastW = 0, lastH = 0, lastDpr = 0, lastNarrow = null;
     const coarse = window.matchMedia && window.matchMedia("(pointer:coarse)").matches;
     function resize(force) {
       const w = window.innerWidth, h = window.innerHeight, dpr = window.devicePixelRatio || 1;
       // touch browsers resize the viewport as the URL bar shows/hides; don't rebuild the scene for that
-      if (!force && coarse && w === lastW && dpr === lastDpr && Math.abs(h - lastH) < 120) { measure(); return; }
-      lastW = w; lastH = h; lastDpr = dpr;
+      // (unless the height change flips the layout: narrowness also depends on aspect)
+      if (!force && coarse && w === lastW && dpr === lastDpr && narrowNow() === lastNarrow && Math.abs(h - lastH) < 120) { measure(); return; }
+      lastW = w; lastH = h; lastDpr = dpr; lastNarrow = narrowNow();
       const pr = Math.min(dpr, w < 760 ? 1.5 : 1.75);
       renderer.setPixelRatio(pr);
       renderer.setSize(w, h, false);
@@ -508,6 +510,8 @@ export function createWorld({ canvas, build }) {
     const relayout = () => { measure(); park(); requestRender(); };
     let rt;
     window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { resize(); requestRender(); }, 150); });
+    // layout flips (desktop column <-> full-width text) always rebuild, whatever triggered them
+    if (DESK.addEventListener) DESK.addEventListener("change", () => { resize(true); requestRender(); });
     window.addEventListener("load", relayout);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
     if (window.ResizeObserver) new ResizeObserver(relayout).observe(document.body);

@@ -450,22 +450,30 @@ createWorld({
     /* a formation shot: `off` is the camera offset from F as framed at ~16:10, where each formation takes about
        30% of the screen width, inside the free area right of the text column */
     const shot = (sel, F, off, o) => ({ sel, F, off, cam: F.clone().add(off), ...o });
+    /* narrow screens (text full width, world centred behind a veil): each formation drops into the empty band
+       above or below its section's text, clear of the hero buttons, the slider and the cards (narrowOffset,
+       applied live on resize; +y drops the formation down the screen). The capability cards fill a phone or
+       tablet screen from top to bottom, so that formation stays behind them */
     const stations = [
-      shot(".phero", HERO.clone().add(V(0, -0.2, 0)), V(5.6, 5.8, 22.2), { shift: 0.4, narrowScale: 1.3 }),
+      // narrow: pulled back and dropped below the hero buttons (a phone's gap there is only ~150px tall), and
+      // slid right so on tablets it sits beside the lede rather than behind it
+      shot(".phero", HERO.clone().add(V(0, -0.2, 0)), V(5.6, 5.8, 22.2), { shift: 0.4, narrowScale: 1.55, narrowOffset: V(-1.7, 5.6, 0) }),
       // a near-frontal view: a big sideways offset brings the database end much closer and wider on screen
-      shot("#overview", OV, V(2.6, 4.4, 20.5), { shift: 0.4, narrowScale: 1.0 }),
-      shot("#capabilities", CAP, V(-2.8, 11.3, 16.7), { shift: 0.39, narrowScale: 1.3 }),
-      { sel: "#how .step:first-child", F: F3, cam: F3.clone().add(RIDE), shift: 0.34 },
+      shot("#overview", OV, V(2.6, 4.4, 20.5), { shift: 0.4, narrowScale: 0.85, narrowOffset: V(0, 6.9, 0) }),
+      shot("#capabilities", CAP, V(-2.8, 11.3, 16.7), { shift: 0.4, narrowScale: 1.3 }),
+      // narrow: slid right, so the Ask bubble clears the step text
+      { sel: "#how .step:first-child", F: F3, cam: F3.clone().add(RIDE), shift: 0.36, narrowOffset: RR.clone().multiplyScalar(-1.8) },
       // look a little higher than the last stage: it centres vertically and the near rail drops out of frame
-      { sel: "#how .step:last-child", F: F4.clone().add(V(0, 1.0, 0)), cam: F4.clone().add(RIDE), shift: 0.44 },
-      shot("#gallery", GAL, V(4.7, 1.6, 18.3), { shift: 0.415, narrowScale: 1.0 }),
-      shot("#outcome", OUT.clone().add(V(-0.2, 0, 0)), V(-2.8, 2.8, 18), { shift: 0.4, narrowScale: 1.1 }),
-      { sel: "#next", F: V(4, -30, -60), cam: V(4, 36, 46), shift: 0.43, narrowScale: 1 },
+      { sel: "#how .step:last-child", F: F4.clone().add(V(0, 1.0, 0)), cam: F4.clone().add(RIDE), shift: 0.44, narrowOffset: V(0, 2.3, 0) },
+      shot("#gallery", GAL, V(4.7, 1.6, 18.3), { shift: 0.415, narrowScale: 1.1, narrowOffset: V(0, 8.3, 0) }),
+      shot("#outcome", OUT.clone().add(V(-0.2, 0, 0)), V(-2.8, 2.8, 18), { shift: 0.4, narrowScale: 1.2, narrowOffset: V(0, 7.85, 0) }),
+      // narrow: the route fills the band between the outcome cards and the closing heading
+      { sel: "#next", F: V(4, -30, -60), cam: V(4, 36, 46), shift: 0.43, narrowScale: 1.1, narrowOffset: V(-4, -8.7, 5.4) },
     ];
-    // every formation's own camera is within ~27 units of it (~35 on phones, where cameras pull back);
-    // fade anything further so far stations don't ghost through the text column
+    // every formation's own camera is within ~27 units of it (~42 on narrow screens, where the hero pulls back
+    // furthest); fade anything further so far stations don't ghost through the text column
     // squarer desktop screens need no special casing: the engine widens its field of view to keep 16:10 framing
-    const fog = { near: 21, far: 37, narrowNear: 30, narrowFar: 48, finaleNear: 150, finaleFar: 320 };
+    const fog = { near: 21, far: 37, narrowNear: 36, narrowFar: 52, finaleNear: 150, finaleFar: 320 };
     return { stations, fog };
   },
 });

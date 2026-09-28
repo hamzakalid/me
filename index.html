@@ -476,7 +476,7 @@
     .will3d .srow{grid-template-columns:1fr;gap:12px} /* label above the chips in the narrow column */
   }
   /* below 1000px text spans the full width, so the world sits behind an even veil (matches world.js) */
-  @media (max-width:999.98px), (max-aspect-ratio:6/5){
+  @media not all and (min-width:1000px) and (min-aspect-ratio:1201/1000){
     .scrim{background:var(--scrim)}
     @supports (background:color-mix(in srgb,red 50%,transparent)){.scrim{background:color-mix(in srgb,var(--frost) 55%,transparent)}}
   }

@@ -136,18 +136,21 @@
         if(i > index && atEnd()) i = 0; // the last slides can't all be centred: wrap once the strip can't move
         index = clamp(i);
         // scroll the strip only: scrollIntoView would also nudge the page, and page scroll drives the 3D camera
-        var sl = slides[index];
-        vp.scrollTo({ left: sl.offsetLeft - (vp.clientWidth - sl.offsetWidth) / 2, behavior: RM ? "auto" : "smooth" });
+        vp.scrollTo({ left: target(index), behavior: RM ? "auto" : "smooth" });
         if(user) restart(); }
+      /* where the strip would scroll to centre slide i (clamped: the first and last slides can't truly centre) */
+      function target(i){ var sl = slides[i];
+        return Math.max(0, Math.min(sl.offsetLeft - (vp.clientWidth - sl.offsetWidth)/2, vp.scrollWidth - vp.clientWidth)); }
       function paint(){
         var mid = vp.scrollLeft + vp.clientWidth/2, best=0, bd=Infinity;
         for(var i=0;i<slides.length;i++){
           var center = slides[i].offsetLeft + slides[i].offsetWidth/2, dist = Math.abs(center-mid);
-          if(dist<bd){ bd=dist; best=i; }
+          var td = Math.abs(target(i) - vp.scrollLeft);
+          // ties (several slides clamp to the same end) go to the slide nearest that end
+          if(td<bd || (td===bd && vp.scrollLeft > (vp.scrollWidth - vp.clientWidth)/2)){ bd=td; best=i; }
           if(!RM){ var art=slides[i].firstElementChild; if(art){ var k=Math.min(1,dist/(vp.clientWidth||1));
             art.style.transform="scale("+(1-k*0.14).toFixed(3)+")"; art.style.opacity=(1-k*0.5).toFixed(3); } }
         }
-        if(atEnd()) best = slides.length - 1;
         index=best; for(var j=0;j<dots.length;j++){ dots[j].classList.toggle("active", j===index); } ticking=false;
       }
       function schedule(){ if(!ticking){ ticking=true; requestAnimationFrame(paint); } }

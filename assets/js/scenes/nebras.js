@@ -367,19 +367,24 @@ createWorld({
       return V(0, 0, 0);
     } });
 
+    const back = (F, cam, k) => F.clone().add(cam.clone().sub(F).multiplyScalar(k)); // same shot, from further away
+    const FIN = V(3, -9, -50);
     return {
       stations: [
-        // below 1000px the compare slider follows the hero copy; lift the ontology behind the title and lede
-        { sel: ".phero", F: ONT, cam: V(0, 0.8, 20), shift: 0.34, narrowOffset: V(0, -4.5, 0) },
+        // desktop: every formation starts right of ~66% of the width, so it clears the text column even at
+        // 1200px, where that column is widest relative to the screen (60% of 1200 plus the gutter)
+        // narrow: the compare slider follows the hero copy, so the ontology sits behind the title and lede, above the
+        // buttons; the outcome drops below its cards and the finale rises above the closing call to action
+        { sel: ".phero", F: ONT, cam: V(0, 0.8, 20), shift: 0.36, narrowScale: 1.5, narrowOffset: V(0, -9.9, 0) },
         { sel: "#overview", F: V(-0.5, -0.2, -7), cam: V(-1.5, 1.6, 2), shift: 0.12, inside: true },
-        { sel: "#capabilities", F: CAPS, cam: CAPS.clone().add(V(2.5, 1.4, 17.5)), shift: 0.38 },
-        { sel: "#how .step:first-child", F: tgtHow0, cam: camHow0, shift: 0.35 },
+        { sel: "#capabilities", F: CAPS, cam: back(CAPS, CAPS.clone().add(V(2.5, 1.4, 17.5)), 1.1), shift: 0.41 },
+        { sel: "#how .step:first-child", F: tgtHow0, cam: back(tgtHow0, camHow0, 1.06), shift: 0.38 },
         { sel: "#how .step:last-child", F: tgtHow1, cam: camHow1, shift: 0.34 },
-        { sel: "#gallery", F: GAL, cam: camGal, shift: 0.36 },
-        { sel: "#outcome", F: OUT, cam: OUT.clone().add(V(3.5, 5.5, 15)), shift: 0.39 },
-        { sel: "#next", F: V(3, -9, -50), cam: V(18, 36, 50), shift: 0.42, narrowScale: 1.15 },
+        { sel: "#gallery", F: GAL, cam: camGal, shift: 0.385 },
+        { sel: "#outcome", F: OUT, cam: OUT.clone().add(V(3.5, 5.5, 15)), shift: 0.415, narrowOffset: V(0, 8.6, 0) },
+        { sel: "#next", F: FIN, cam: back(FIN, V(18, 36, 50), 1.12), shift: 0.47, narrowScale: 0.85, narrowOffset: V(-6, -20, 0) },
       ],
-      fog: { finaleNear: 100, finaleFar: 230 },
+      fog: { finaleNear: 112, finaleFar: 258 },
     };
   },
 });
